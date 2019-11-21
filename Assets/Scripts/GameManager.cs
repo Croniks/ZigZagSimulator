@@ -22,9 +22,12 @@ struct Displacement
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+
     public CapsuleRule capsuleRule = CapsuleRule.inOrder;
     public LevelDifficulty levelDifficulty = LevelDifficulty.Hard;
     public LayerMask layerMaskForCamera;
+    public float fallTimer = 1.2f;
     
     [SerializeField]
     private Ball _ball;
@@ -71,8 +74,12 @@ public class GameManager : MonoBehaviour
     private Displacement _displacementOnX;
     private Displacement _displacementOnZ;
     private GameObject _platformPrefab;
-
-
+    
+    void Awake()
+    {
+        Instance = this;
+    }
+    
     void Start()
     {
         DefineLevelDifficulty(levelDifficulty);
@@ -93,7 +100,6 @@ public class GameManager : MonoBehaviour
 
     public void EndGame()
     {
-        _ball.EndMoving();
         _endGamePanel.gameObject.SetActive(true);
     }
 
@@ -160,7 +166,7 @@ public class GameManager : MonoBehaviour
             CollectionforCaplsule[i % 5] = lastPlatform;
             
             if ((i + 1) % 5 == 0)
-            { 
+            {
                 CreateCapsule(CollectionforCaplsule);
             }
         }
@@ -222,7 +228,7 @@ public class GameManager : MonoBehaviour
         Vector3 pos = new Vector3(gameObjForCapsule.transform.position.x, 
                                                     _capsule.transform.position.y, 
                                                         gameObjForCapsule.transform.position.z);
-    
-       Instantiate(_capsule, pos, Quaternion.identity);
+
+        Instantiate(_capsule, pos, Quaternion.identity);
     }
 }

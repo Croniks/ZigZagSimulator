@@ -8,16 +8,13 @@ public class Capsule : MonoBehaviour
 
     void Start()
     {
-        _gameManager = FindObjectOfType<GameManager>();
+        _gameManager = GameManager.Instance;
     }
     
     void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Ball")
-        {
-            _gameManager.NumberOfPoints = 1;
-            Destroy(gameObject);
-        }
+        _gameManager.NumberOfPoints = 1;
+        Destroy(gameObject);   
     }
 
     void OnTriggerExit(Collider other)

@@ -15,7 +15,7 @@ public class LastPlatform : MonoBehaviour
 
     void Start()
     {
-        _gameManager = FindObjectOfType<GameManager>();
+        _gameManager = GameManager.Instance;
         _selfTransform = GetComponent<Transform>();
 
         _position = new Vector3(_selfTransform.position.x - _distance,

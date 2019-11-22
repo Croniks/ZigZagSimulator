@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -8,50 +6,43 @@ using UnityEngine.UI;
 public enum LevelDifficulty { Easy, Normal, Hard }
 public enum CapsuleRule { RandomFrom5, inOrder }
 
-struct Displacement
-{
-    public float X { get; private set; }
-    public float Z { get; private set; }
-
-    public Displacement(float x, float z)
-    {
-        X = x;
-        Z = z;
-    }
-}
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    public CapsuleRule capsuleRule = CapsuleRule.inOrder;
     public LevelDifficulty levelDifficulty = LevelDifficulty.Hard;
-    public LayerMask layerMaskForCamera;
-    public float fallTimer = 1.2f;
+    public CapsuleRule capsuleRule = CapsuleRule.inOrder;
+    public float fallTimer = 2f;
     
     [SerializeField]
     private Ball _ball;
     [SerializeField]
-    private LayerMask _layerMaskForNextPlatform;
+    private GameObject[] _platformPrefabs;
     [SerializeField]
-    private GameObject _platformEasy;
-    [SerializeField]
-    private GameObject _platformNormal;
-    [SerializeField]
-    private GameObject _platformHard;
+    private Transform[] _startPlatforms;
     [SerializeField]
     private GameObject _capsule;
     [SerializeField]
-    private Transform _startPlatform;
-    [SerializeField]
-    private int _maxNumberPlatforms = 100;
-    [SerializeField]
     private RectTransform _endGamePanel;
-
     [SerializeField]
     private Text _pointsUI;
-    private int _numberOfPoints;
+    [SerializeField]
+    private int _maxNumberPlatforms = 100;
 
+    [SerializeField]
+    public LayerMask layerMaskForCamera;
+    [SerializeField]
+    private LayerMask _layerMaskForNextPlatform;
+    
+    private GameObject _currentPlatformPrefab;
+    private Transform _currentStartPlatform;
+
+    private Vector3 _boxSizes;
+    private float _displacement;
+    private Vector3 _lastPlatformPosition;
+    
+    private int _numberOfPoints;
     public int NumberOfPoints
     {
         get
@@ -64,16 +55,9 @@ public class GameManager : MonoBehaviour
             _pointsUI.text = _numberOfPoints.ToString();
         }
     }
-
-    private Vector3 _lastPlatformPosition;
-    private Vector3 _boxSizes;
+    
     private int _n = 0; 
 
-    private Displacement _initialDisplacementOnX;
-    private Displacement _initialDisplacementOnZ;
-    private Displacement _displacementOnX;
-    private Displacement _displacementOnZ;
-    private GameObject _platformPrefab;
     
     void Awake()
     {
@@ -83,16 +67,9 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         DefineLevelDifficulty(levelDifficulty);
-
-        _lastPlatformPosition = _startPlatform.position;
-        _boxSizes = new Vector3(_platformPrefab.transform.localScale.x / 2,
-                                   _platformPrefab.transform.localScale.y / 2,
-                                       _platformPrefab.transform.localScale.z / 2);
-
-        InitializeLevel();
         BuildPlatforms();
     }
-    
+
     public void StartGame()
     {
         _ball.StartMoving();
@@ -107,7 +84,7 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(0);
     }
-    
+
     public void QuitGame()
     {
         Application.Quit();
@@ -115,28 +92,15 @@ public class GameManager : MonoBehaviour
 
     private void DefineLevelDifficulty(LevelDifficulty levelDifficulty)
     {
-        if(levelDifficulty == LevelDifficulty.Easy)
-        {
-            _initialDisplacementOnX = _displacementOnX = new Displacement(3f, 0f);
-            _initialDisplacementOnZ = _displacementOnZ = new Displacement(0f, 3f);
-            _platformPrefab = _platformEasy;
-        }
-        else if(levelDifficulty == LevelDifficulty.Normal)
-        {
-            _initialDisplacementOnX = new Displacement(2.5f, 0.5f);
-            _initialDisplacementOnZ = new Displacement(0.5f, 2.5f);
-            _displacementOnX = new Displacement(2f, 0f);
-            _displacementOnZ = new Displacement(0f, 2f);
-            _platformPrefab = _platformNormal;
-        }
-        else
-        {
-            _initialDisplacementOnX = new Displacement(2f, 1f);
-            _initialDisplacementOnZ = new Displacement(1f, 2f);
-            _displacementOnX = new Displacement(1f, 0f);
-            _displacementOnZ = new Displacement(0f, 1f);
-            _platformPrefab = _platformHard;
-        }
+        _currentPlatformPrefab = _platformPrefabs[(int)levelDifficulty];
+        _currentStartPlatform = _startPlatforms[(int)levelDifficulty];
+        
+        _boxSizes = new Vector3(_currentPlatformPrefab.transform.localScale.x / 2,
+                                   _currentPlatformPrefab.transform.localScale.y / 2,
+                                       _currentPlatformPrefab.transform.localScale.z / 2);
+
+        _displacement = _currentPlatformPrefab.transform.localScale.x;
+        _lastPlatformPosition = _currentStartPlatform.position;
     }
 
     public void BuildPlatforms()
@@ -150,19 +114,20 @@ public class GameManager : MonoBehaviour
         {
             if (Random.Range(0, 2) == 0)
             {
-                postion = NextPosition(_displacementOnX);
+                postion = NextPosition(_displacement, true);
                 if (!IsConstructionAllowed(postion))
-                    postion = NextPosition(_displacementOnZ);
+                    postion = NextPosition(_displacement, false);
             }
             else
             {
-                postion = NextPosition(_displacementOnZ);
+                postion = NextPosition(_displacement, false);
                 if (!IsConstructionAllowed(postion))
-                    postion = NextPosition(_displacementOnX);
+                    postion = NextPosition(_displacement, true);
             }
             
-            lastPlatform = Instantiate(_platformPrefab, postion, Quaternion.identity);
+            lastPlatform = Instantiate(_currentPlatformPrefab, postion, Quaternion.identity);
             _lastPlatformPosition = postion;
+
             CollectionforCaplsule[i % 5] = lastPlatform;
             
             if ((i + 1) % 5 == 0)
@@ -174,40 +139,27 @@ public class GameManager : MonoBehaviour
         lastPlatform?.AddComponent<LastPlatform>();
     }
     
-    private void InitializeLevel()
+    private Vector3 NextPosition(float displacement, bool onX)
     {
-        Vector3 postion;
-        
-        if (Random.Range(0, 2) == 0)
+        Vector3 newPosition = _lastPlatformPosition;
+
+        if (onX)
         {
-            postion = NextPosition(_initialDisplacementOnX);
+            newPosition.x += displacement;
         }
         else
         {
-            postion = NextPosition(_initialDisplacementOnZ);
+            newPosition.z += displacement;
         }
-
-        Instantiate(_platformPrefab, postion, Quaternion.identity);
-        _lastPlatformPosition = postion;
-    }
-
-    private Vector3 NextPosition(Displacement dis)
-    {
-        return new Vector3(_lastPlatformPosition.x + dis.X,
-                                    _lastPlatformPosition.y,
-                                        _lastPlatformPosition.z + dis.Z);
+        
+        return newPosition;
     }
     
     private bool IsConstructionAllowed(Vector3 postion)
     {
         Collider[] hitColliders = Physics.OverlapBox(postion, _boxSizes, Quaternion.identity, _layerMaskForNextPlatform);
 
-        foreach (Collider col in hitColliders)
-        {
-            return false;
-        }
-
-        return true;
+        return !(hitColliders.Length > 0);
     }
 
     private void CreateCapsule(GameObject[] gameObjects)

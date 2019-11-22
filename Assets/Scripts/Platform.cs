@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+
 
 public class Platform : MonoBehaviour
 {
@@ -35,7 +34,7 @@ public class Platform : MonoBehaviour
     {
         _falling = true;
     }
-
+    
     private void PlatformCrashes()
     {
         _rb.isKinematic = false;

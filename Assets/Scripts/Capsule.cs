@@ -16,12 +16,4 @@ public class Capsule : MonoBehaviour
         _gameManager.NumberOfPoints = 1;
         Destroy(gameObject);   
     }
-
-    void OnTriggerExit(Collider other)
-    {
-        if (other.tag == "Platform")
-        {
-            Destroy(gameObject);
-        }
-    }
 }

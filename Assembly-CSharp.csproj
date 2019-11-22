@@ -64,7 +64,6 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Ball.cs" />
     <Compile Include="Assets\Scripts\Capsule.cs" />
-    <Compile Include="Assets\Scripts\CapsuleTrigger.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\LastPlatform.cs" />
     <Compile Include="Assets\Scripts\Platform.cs" />

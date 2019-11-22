@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 public class LastPlatform : MonoBehaviour
@@ -47,11 +45,6 @@ public class LastPlatform : MonoBehaviour
     {
         Collider[] hitColliders = Physics.OverlapBox(_position, _boxSizes, Quaternion.identity, _layerMaskForCamera);
 
-        foreach (Collider col in hitColliders)
-        {
-            return true;
-        }
-        
-        return false;
+        return hitColliders.Length > 0;
     }
 }

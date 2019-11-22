@@ -1,11 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 
 public class Ball : MonoBehaviour
 {
     public float ballVelocity = 5;
-    public float ballDestroyTime = 1;
     public float camerOffset = 1f;
 
     [SerializeField]
@@ -16,7 +14,6 @@ public class Ball : MonoBehaviour
     private float _x, _y, _z = 0f;
     private Vector3 _onZ = new Vector3(0f, 0f, 1f);
     private Vector3 _onX = new Vector3(1f, 0f, 0f);
-    private Vector3 _cameraDirection = new Vector3(0.5f, 0f, 0.5f);
     private Vector3 _ballDirection;
     private float _cameraDisplacement;
     private bool _isForward = true;
@@ -73,16 +70,7 @@ public class Ball : MonoBehaviour
     
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.name);
-
         _gameManager.EndGame();
         Destroy(gameObject);
     }
-    
-    //IEnumerator DestroyWithDelay(float sec)
-    //{
-    //    yield return new WaitForSeconds(sec);
-    //    Destroy(gameObject);
-    //    yield break;
-    //}
 }

@@ -19,15 +19,15 @@ TagManager:
   - UI
   - 
   - 
-  - Border
+  - BorderTrigger
+  - PlatformTrigger
+  - FallTrigger
   - Platform
-  - LastPlatform
-  - Camera
   - Ball
-  - Fall
-  - FallPlatform
   - Capsule
-  - CapsuleTrigger
+  - Camera
+  - 
+  - 
   - 
   - 
   - 

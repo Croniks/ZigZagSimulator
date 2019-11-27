@@ -5,34 +5,20 @@ public class Platform : MonoBehaviour
 {
     [SerializeField]
     private Rigidbody _rb;
-    private float _fallTimer;
     private bool _falling = false;
     
-
-    void Start()
-    {
-        _fallTimer = GameManager.Instance.fallTimer;
-    }
-
-    void Update()
-    {
-        if(_falling)
-        {
-            _fallTimer -= Time.deltaTime;
-
-            if(_fallTimer <= 0)
-                PlatformCrashes();
-        }
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        Destroy(gameObject);   
-    }
     
-    void OnCollisionExit(Collision other)
+    void OnTriggerExit(Collider other)
     {
-        _falling = true;
+        if(!_falling)
+        {
+            PlatformCrashes();
+            _falling = true;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     
     private void PlatformCrashes()

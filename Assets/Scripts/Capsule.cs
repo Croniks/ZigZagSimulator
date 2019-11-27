@@ -5,7 +5,6 @@ public class Capsule : MonoBehaviour
 {
     private GameManager _gameManager;
 
-
     void Start()
     {
         _gameManager = GameManager.Instance;

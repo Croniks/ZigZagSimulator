@@ -13,8 +13,10 @@ public class GameManager : MonoBehaviour
 
     public LevelDifficulty levelDifficulty = LevelDifficulty.Hard;
     public CapsuleRule capsuleRule = CapsuleRule.inOrder;
-    public float fallTimer = 2f;
-    
+    public int maxNumberPlatforms = 40;
+    [SerializeField]
+    private int _offSetForPlatforms = 15;
+
     [SerializeField]
     private Ball _ball;
     [SerializeField]
@@ -27,11 +29,9 @@ public class GameManager : MonoBehaviour
     private RectTransform _endGamePanel;
     [SerializeField]
     private Text _pointsUI;
-    [SerializeField]
-    private int _maxNumberPlatforms = 100;
 
     [SerializeField]
-    public LayerMask layerMaskForCamera;
+    public LayerMask layerMaskForLastPlatform;
     [SerializeField]
     private LayerMask _layerMaskForNextPlatform;
     
@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         DefineLevelDifficulty(levelDifficulty);
-        BuildPlatforms();
+        BuildPlatforms(maxNumberPlatforms + _offSetForPlatforms);
     }
 
     public void StartGame()
@@ -103,14 +103,14 @@ public class GameManager : MonoBehaviour
         _lastPlatformPosition = _currentStartPlatform.position;
     }
 
-    public void BuildPlatforms()
+    public void BuildPlatforms(int maxPlatforms)
     {
-        GameObject lastPlatform = null;
+        GameObject platform = null;
         Vector3 postion;
 
         GameObject[] CollectionforCaplsule = new GameObject[5];
         
-        for (int i=0; i < _maxNumberPlatforms; i++)
+        for (int i=0; i < maxPlatforms; i++)
         {
             if (Random.Range(0, 2) == 0)
             {
@@ -125,18 +125,16 @@ public class GameManager : MonoBehaviour
                     postion = NextPosition(_displacement, true);
             }
             
-            lastPlatform = Instantiate(_currentPlatformPrefab, postion, Quaternion.identity);
             _lastPlatformPosition = postion;
+            platform = Instantiate(_currentPlatformPrefab, postion, Quaternion.identity);
 
-            CollectionforCaplsule[i % 5] = lastPlatform;
+            CollectionforCaplsule[i % 5] = platform;
             
             if ((i + 1) % 5 == 0)
             {
                 CreateCapsule(CollectionforCaplsule);
             }
         }
-        
-        lastPlatform?.AddComponent<LastPlatform>();
     }
     
     private Vector3 NextPosition(float displacement, bool onX)
@@ -165,6 +163,7 @@ public class GameManager : MonoBehaviour
     private void CreateCapsule(GameObject[] gameObjects)
     {
         GameObject gameObjForCapsule = null;
+        GameObject capsule = null;
 
         if(capsuleRule == CapsuleRule.RandomFrom5)
         {
@@ -181,6 +180,7 @@ public class GameManager : MonoBehaviour
                                                     _capsule.transform.position.y, 
                                                         gameObjForCapsule.transform.position.z);
 
-        Instantiate(_capsule, pos, Quaternion.identity);
+        capsule = Instantiate(_capsule, pos, Quaternion.identity);
+        capsule.transform.parent = gameObjForCapsule.transform;
     }
 }

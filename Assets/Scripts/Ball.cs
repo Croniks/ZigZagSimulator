@@ -9,6 +9,7 @@ public class Ball : MonoBehaviour
     [SerializeField]
     private Transform _cameraTransform;
     private Transform _selfTransform;
+    private float _selfY;
     private GameManager _gameManager;
 
     private float _x, _y, _z = 0f;
@@ -25,6 +26,7 @@ public class Ball : MonoBehaviour
         _selfTransform = GetComponent<Transform>();
         _cameraTransform = _cameraTransform.GetComponent<Transform>();
         _ballDirection = Vector3.zero;
+        _selfY = _selfTransform.position.y;
         _y = _cameraTransform.position.y;
     }
     
@@ -43,6 +45,16 @@ public class Ball : MonoBehaviour
         _cameraDisplacement = (_x + _z) / 2;
         _cameraTransform.position = new Vector3(_cameraDisplacement, _y, _cameraDisplacement);
     }
+
+    void LateUpdate()
+    {
+        if ((_selfY - _selfTransform.position.y) > 0.5f)
+        {
+            _gameManager.EndGame();
+            Destroy(gameObject);
+        }
+    }
+
     
     private void ChangeDirection(bool isForward)
     {
@@ -66,11 +78,5 @@ public class Ball : MonoBehaviour
     public void StopMoving()
     {
         _ballDirection = Vector3.zero;
-    }
-    
-    void OnTriggerEnter(Collider other)
-    {
-        _gameManager.EndGame();
-        Destroy(gameObject);
     }
 }

@@ -67,6 +67,8 @@
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Platform.cs" />
     <Compile Include="Assets\Scripts\PlatformTrigger.cs" />
+    <Compile Include="Assets\Scripts\UIPanel.cs" />
+    <Compile Include="Assets\Scripts\UITransition.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>D:/Unity/Projects/ZigZagSimulator/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

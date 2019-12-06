@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 
 public enum LevelDifficulty { Easy, Normal, Hard }
@@ -10,7 +10,14 @@ public enum CapsuleRule { RandomFrom5, inOrder }
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-
+    
+    [SerializeField]
+    private float _moveSpeedMin = 4;
+    [SerializeField]
+    private float _moveSpeedMax = 7;
+    
+    [Range(4, 7)]
+    public float moveSpeed;
     public LevelDifficulty levelDifficulty = LevelDifficulty.Hard;
     public CapsuleRule capsuleRule = CapsuleRule.inOrder;
     public int maxNumberPlatforms = 40;
@@ -19,17 +26,30 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private Ball _ball;
+    private Vector3 _initialBallPosition;
+    private Vector3 _initialSelfPosition;
+    public List<GameObject> platformsPool;
+
+    [SerializeField]
+    private GameObject _generalPlatformPrefab;
+    private GameObject _generalPlatform;
     [SerializeField]
     private GameObject[] _platformPrefabs;
     [SerializeField]
     private Transform[] _startPlatforms;
     [SerializeField]
     private GameObject _capsule;
+    
     [SerializeField]
-    private RectTransform _endGamePanel;
+    private UIPanel _startPanel;
+    [SerializeField]
+    private GameObject _backgroundStartPanel;
+    [SerializeField]
+    private Slider _moveSpeed;
+    
     [SerializeField]
     private Text _pointsUI;
-
+    
     [SerializeField]
     public LayerMask layerMaskForLastPlatform;
     [SerializeField]
@@ -66,30 +86,76 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
-        DefineLevelDifficulty(levelDifficulty);
-        BuildPlatforms(maxNumberPlatforms + _offSetForPlatforms);
+        _initialBallPosition = _ball.transform.position;
+        _initialSelfPosition = transform.position;
+        platformsPool = new List<GameObject>();
+        
+        // Запрашивать информацию о настройках при старте сцены
+
+        _startPanel.IsOpened = true;
+        _backgroundStartPanel.SetActive(true);
     }
 
     public void StartGame()
+    { 
+        _numberOfPoints = 0;
+        _pointsUI.text = "0";
+
+        DefineLevelDifficulty(levelDifficulty);
+        BuildPlatforms(maxNumberPlatforms + _offSetForPlatforms);
+        
+        _ball.ballVelocity = moveSpeed;
+        _ball.transform.position = _initialBallPosition;
+        transform.position = _initialSelfPosition;
+        _ball.gameObject.SetActive(true);
+    }
+    
+    public void StartMoving()
     {
-        _ball.StartMoving();
+        _ball.enabled = true;
+    }
+
+    public void AcivateStartPanel(bool flag)
+    {
+        _startPanel.IsOpened = flag;
+        _backgroundStartPanel.SetActive(flag);
     }
 
     public void EndGame()
     {
-        _endGamePanel.gameObject.SetActive(true);
+        _startPanel.IsOpened = true;
+        _backgroundStartPanel.SetActive(true);
     }
-
+    
     public void RestartGame()
     {
-        SceneManager.LoadScene(0);
+        // Удалить предыдущие платформы
+        foreach(var platform in platformsPool)
+        {
+            Destroy(platform);
+        }
+        
+        platformsPool.Clear();
+        
+        _ball.enabled = false;
+        StartGame();
     }
 
     public void QuitGame()
     {
         Application.Quit();
     }
+    
+    public void SetLevelDifficulty(int index)
+    {
+        levelDifficulty = (LevelDifficulty)index;
+    }
 
+    public void SetMoveSpeed()
+    { 
+        moveSpeed = _moveSpeedMin + (((_moveSpeedMax - _moveSpeedMin) * _moveSpeed.value) / 10f );
+    }
+    
     private void DefineLevelDifficulty(LevelDifficulty levelDifficulty)
     {
         _currentPlatformPrefab = _platformPrefabs[(int)levelDifficulty];
@@ -105,6 +171,12 @@ public class GameManager : MonoBehaviour
 
     public void BuildPlatforms(int maxPlatforms)
     {
+        if(_generalPlatform != null)
+        {
+            Destroy(_generalPlatform);
+        }
+
+        _generalPlatform = Instantiate(_generalPlatformPrefab, _generalPlatformPrefab.transform.position, Quaternion.identity);
         GameObject platform = null;
         Vector3 postion;
 
@@ -127,6 +199,7 @@ public class GameManager : MonoBehaviour
             
             _lastPlatformPosition = postion;
             platform = Instantiate(_currentPlatformPrefab, postion, Quaternion.identity);
+            platformsPool.Add(platform);
 
             CollectionforCaplsule[i % 5] = platform;
             

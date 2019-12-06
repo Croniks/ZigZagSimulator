@@ -3,11 +3,16 @@
 
 public class Platform : MonoBehaviour
 {
+    private GameManager _gameManager;
     [SerializeField]
     private Rigidbody _rb;
     private bool _falling = false;
-    
-    
+
+    void Start()
+    {
+        _gameManager = GameManager.Instance;
+    }
+
     void OnTriggerExit(Collider other)
     {
         if(!_falling)
@@ -17,6 +22,7 @@ public class Platform : MonoBehaviour
         }
         else
         {
+            _gameManager.platformsPool.Remove(gameObject);
             Destroy(gameObject);
         }
     }

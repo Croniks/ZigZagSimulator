@@ -18,6 +18,7 @@ public class Ball : MonoBehaviour
     private Vector3 _ballDirection;
     private float _cameraDisplacement;
     private bool _isForward = true;
+    private Vector3 _newPosition = new Vector3();
 
     
     void Start()
@@ -25,9 +26,10 @@ public class Ball : MonoBehaviour
         _gameManager = GameManager.Instance;
         _selfTransform = GetComponent<Transform>();
         _cameraTransform = _cameraTransform.GetComponent<Transform>();
-        _ballDirection = Vector3.zero;
+        _ballDirection = _onX;
         _selfY = _selfTransform.position.y;
         _y = _cameraTransform.position.y;
+        enabled = false;
     }
     
     void Update()
@@ -43,7 +45,12 @@ public class Ball : MonoBehaviour
         _z = _selfTransform.position.z - camerOffset;
         
         _cameraDisplacement = (_x + _z) / 2;
-        _cameraTransform.position = new Vector3(_cameraDisplacement, _y, _cameraDisplacement);
+
+        _newPosition.x = _cameraDisplacement;
+        _newPosition.y = _y;
+        _newPosition.z = _cameraDisplacement;
+       
+        _cameraTransform.position = _newPosition;
     }
 
     void LateUpdate()
@@ -51,7 +58,7 @@ public class Ball : MonoBehaviour
         if ((_selfY - _selfTransform.position.y) > 0.5f)
         {
             _gameManager.EndGame();
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 
@@ -60,21 +67,16 @@ public class Ball : MonoBehaviour
     {
         if(isForward)
         {
-            _ballDirection = _onZ;
+            _ballDirection = _onX;
         }
         else
         {
-            _ballDirection = _onX;
+            _ballDirection = _onZ;
         }
 
         _isForward = isForward;
     }
     
-    public void StartMoving()
-    {
-        _ballDirection = _onZ;
-    }
-
     public void StopMoving()
     {
         _ballDirection = Vector3.zero;

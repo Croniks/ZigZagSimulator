@@ -1,60 +1,26 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
-
-
-public enum LevelDifficulty { Easy, Normal, Hard }
-public enum CapsuleRule { RandomFrom5, inOrder }
 
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    
-    [SerializeField]
-    private float _moveSpeedMin = 4;
-    [SerializeField]
-    private float _moveSpeedMax = 7;
-    
-    [Range(4, 7)]
-    public float moveSpeed;
-    public LevelDifficulty levelDifficulty = LevelDifficulty.Hard;
-    public CapsuleRule capsuleRule = CapsuleRule.inOrder;
-    public int maxNumberPlatforms = 40;
-    [SerializeField]
-    private int _offSetForPlatforms = 15;
 
-    [SerializeField]
-    private Ball _ball;
-    private Vector3 _initialBallPosition;
-    private Vector3 _initialSelfPosition;
-    public List<GameObject> platformsPool;
-
-    [SerializeField]
-    private GameObject _generalPlatformPrefab;
-    private GameObject _generalPlatform;
-    [SerializeField]
-    private GameObject[] _platformPrefabs;
-    [SerializeField]
-    private Transform[] _startPlatforms;
-    [SerializeField]
-    private GameObject _capsule;
-    
-    [SerializeField]
-    private UIPanel _startPanel;
-    [SerializeField]
-    private GameObject _backgroundStartPanel;
-    [SerializeField]
-    private Slider _moveSpeed;
-    
-    [SerializeField]
-    private Text _pointsUI;
-    
-    [SerializeField]
-    public LayerMask layerMaskForLastPlatform;
-    [SerializeField]
+    private LevelDifficulty _levelDifficulty;
+    private CapsuleRule _capsuleRule;
     private LayerMask _layerMaskForNextPlatform;
+    private int _maxNumberPlatforms;
+    private int _offsetForPlatforms;
+    private float _moveSpeed;
     
+    [SerializeField] private Ball _ball;
+    private List<GameObject> _platformsPool;
+
+    [SerializeField] private GameObject _generalPlatformPrefab;
+    private GameObject _generalPlatform;
+    [SerializeField] private GameObject[] _platformPrefabs;
+    [SerializeField] private Transform[] _startPlatforms;
+    [SerializeField] private GameObject _capsule;
     private GameObject _currentPlatformPrefab;
     private Transform _currentStartPlatform;
 
@@ -63,19 +29,6 @@ public class GameManager : MonoBehaviour
     private Vector3 _lastPlatformPosition;
     
     private int _numberOfPoints;
-    public int NumberOfPoints
-    {
-        get
-        {
-            return _numberOfPoints;
-        }
-        set
-        {
-            _numberOfPoints += value;
-            _pointsUI.text = _numberOfPoints.ToString();
-        }
-    }
-    
     private int _n = 0; 
 
     
@@ -86,27 +39,30 @@ public class GameManager : MonoBehaviour
     
     void Start()
     {
-        _initialBallPosition = _ball.transform.position;
-        _initialSelfPosition = transform.position;
-        platformsPool = new List<GameObject>();
-        
-        // Запрашивать информацию о настройках при старте сцены
+        _platformsPool = new List<GameObject>();
 
-        _startPanel.IsOpened = true;
-        _backgroundStartPanel.SetActive(true);
+        // Запрашивать информацию о настройках при старте сцены
+        //foreach (Toggle toggle in _levelDifficultyOption.ActiveToggles())
+        //{
+        //    Debug.Log(toggle);
+        //    toggle.isOn = true;
+        //}
+
+
+        SetLevelDifficulty(2);
+       
+        
+        //_startPanel.IsOpened = true;
+        //_backgroundStartPanel.SetActive(true);
     }
 
     public void StartGame()
     { 
         _numberOfPoints = 0;
-        _pointsUI.text = "0";
 
-        DefineLevelDifficulty(levelDifficulty);
-        BuildPlatforms(maxNumberPlatforms + _offSetForPlatforms);
+        DefineLevelDifficulty(_levelDifficulty);
+        //BuildPlatforms(_maxNumberPlatforms + _offSetForPlatforms);
         
-        _ball.ballVelocity = moveSpeed;
-        _ball.transform.position = _initialBallPosition;
-        transform.position = _initialSelfPosition;
         _ball.gameObject.SetActive(true);
     }
     
@@ -117,25 +73,25 @@ public class GameManager : MonoBehaviour
 
     public void AcivateStartPanel(bool flag)
     {
-        _startPanel.IsOpened = flag;
-        _backgroundStartPanel.SetActive(flag);
+        //_startPanel.IsOpened = flag;
+        //_backgroundStartPanel.SetActive(flag);
     }
 
     public void EndGame()
     {
-        _startPanel.IsOpened = true;
-        _backgroundStartPanel.SetActive(true);
+        //_startPanel.IsOpened = true;
+        //_backgroundStartPanel.SetActive(true);
     }
     
     public void RestartGame()
     {
         // Удалить предыдущие платформы
-        foreach(var platform in platformsPool)
+        foreach(var platform in _platformsPool)
         {
             Destroy(platform);
         }
         
-        platformsPool.Clear();
+        _platformsPool.Clear();
         
         _ball.enabled = false;
         StartGame();
@@ -148,14 +104,9 @@ public class GameManager : MonoBehaviour
     
     public void SetLevelDifficulty(int index)
     {
-        levelDifficulty = (LevelDifficulty)index;
+        _levelDifficulty = (LevelDifficulty)index;
     }
-
-    public void SetMoveSpeed()
-    { 
-        moveSpeed = _moveSpeedMin + (((_moveSpeedMax - _moveSpeedMin) * _moveSpeed.value) / 10f );
-    }
-    
+ 
     private void DefineLevelDifficulty(LevelDifficulty levelDifficulty)
     {
         _currentPlatformPrefab = _platformPrefabs[(int)levelDifficulty];
@@ -199,7 +150,7 @@ public class GameManager : MonoBehaviour
             
             _lastPlatformPosition = postion;
             platform = Instantiate(_currentPlatformPrefab, postion, Quaternion.identity);
-            platformsPool.Add(platform);
+            _platformsPool.Add(platform);
 
             CollectionforCaplsule[i % 5] = platform;
             
@@ -232,13 +183,13 @@ public class GameManager : MonoBehaviour
 
         return !(hitColliders.Length > 0);
     }
-
+    
     private void CreateCapsule(GameObject[] gameObjects)
     {
         GameObject gameObjForCapsule = null;
         GameObject capsule = null;
 
-        if(capsuleRule == CapsuleRule.RandomFrom5)
+        if(_capsuleRule == CapsuleRule.RandomFrom5)
         {
             gameObjForCapsule = gameObjects[Random.Range(0, 4)];
         }

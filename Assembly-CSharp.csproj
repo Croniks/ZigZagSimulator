@@ -62,13 +62,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Ball.cs" />
-    <Compile Include="Assets\Scripts\Capsule.cs" />
+    <Compile Include="Assets\Scripts\GameEntities\Ball.cs" />
+    <Compile Include="Assets\Scripts\GameEntities\Capsule.cs" />
+    <Compile Include="Assets\Scripts\GameEntities\FallTrigger.cs" />
+    <Compile Include="Assets\Scripts\GameEntities\Platform.cs" />
+    <Compile Include="Assets\Scripts\GameEntities\PlatformTrigger.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
-    <Compile Include="Assets\Scripts\Platform.cs" />
-    <Compile Include="Assets\Scripts\PlatformTrigger.cs" />
-    <Compile Include="Assets\Scripts\UIPanel.cs" />
-    <Compile Include="Assets\Scripts\UITransition.cs" />
+    <Compile Include="Assets\Scripts\SettingsManager.cs" />
+    <Compile Include="Assets\Scripts\UI\UIPanel.cs" />
+    <Compile Include="Assets\Scripts\UI\UITransition.cs" />
+    <Compile Include="Assets\Scripts\UIManager.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>D:/Unity/Projects/ZigZagSimulator/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

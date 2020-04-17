@@ -11,12 +11,12 @@ public class PlatformTrigger : MonoBehaviour
     void Start()
     {
         _gameManager = GameManager.Instance;
-        _maxNumberPlatforms = _gameManager.maxNumberPlatforms;
-        _currentNumberPlatforms = _maxNumberPlatforms;
+        //_maxNumberPlatforms = _currentNumberPlatforms = _gameManager.maxNumberPlatforms;
     }
 
     void OnTriggerExit(Collider other)
     {
+        other.GetComponent<Platform>().FallPlatform();
         _currentNumberPlatforms -= 1;
         
         if (_currentNumberPlatforms < 1)

@@ -12,7 +12,7 @@ public class Capsule : MonoBehaviour
     
     void OnTriggerEnter(Collider other)
     {
-        _gameManager.NumberOfPoints = 1;
+        //_gameManager.NumberOfPoints = 1;
         Destroy(gameObject);   
     }
 }

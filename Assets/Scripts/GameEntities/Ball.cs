@@ -4,8 +4,8 @@
 public class Ball : MonoBehaviour
 {
     [SerializeField] private Transform _cameraTransform;
-
-    private float _ballVelocity = 5f;
+    private float _ballVelocity;
+    
     private float _camerOffset = 1f;
     private GameManager _gameManager;
     private Transform _selfTransform;
@@ -18,18 +18,20 @@ public class Ball : MonoBehaviour
     void Start()
     {
         _gameManager = GameManager.Instance;
-        _selfTransform = GetComponent<Transform>();
         _cameraTransform = _cameraTransform.GetComponent<Transform>();
+        _selfTransform = GetComponent<Transform>();
         _selfY = _selfTransform.position.y;
         _cameraY = _cameraTransform.position.y;
-        this.enabled = false;
+        enabled = false;
+
+        Rigidbody rb = GetComponent<Rigidbody>();
+       
     }
     
     void Update()
     {
         if (Input.GetMouseButtonUp(0))
         {
-            //ChangeDirection(_ballDirection);
             ChangeDirection(!_isForward);
         }
         
@@ -75,21 +77,14 @@ public class Ball : MonoBehaviour
         
         _isForward = isForward;
     }
-
-    private void ChangeDirection(Vector3 direction)
-    {
-        if (direction.Equals(Vector3.forward))
-        {
-            _ballDirection = Vector3.right; 
-        }
-        else
-        {
-            _ballDirection = Vector3.forward; 
-        }
-    }
-
+    
     public void StopMoving()
     {
         _ballDirection = Vector3.zero;
+    }
+
+    public void ChangeVelocity(float velocity)
+    {
+        _ballVelocity = velocity;
     }
 }

@@ -62,6 +62,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\EventAggregator.cs" />
     <Compile Include="Assets\Scripts\GameEntities\Ball.cs" />
     <Compile Include="Assets\Scripts\GameEntities\Capsule.cs" />
     <Compile Include="Assets\Scripts\GameEntities\FallTrigger.cs" />

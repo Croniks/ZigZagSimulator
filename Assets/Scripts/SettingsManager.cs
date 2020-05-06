@@ -1,12 +1,16 @@
 ﻿using UnityEngine;
 
 
-public enum LevelDifficulty { Easy = 1, Normal = 2, Hard = 4 }
-public enum CapsuleRule { Random = 0, RandomFrom5 = 1, InOrder = 2 }
+public enum LevelDifficulty { Easy = 0, Normal = 1, Hard = 2 }
+public enum CapsuleRule { RandomFrom5 = 0, InOrder = 1 }
 
 
 public class SettingsManager : MonoBehaviour
 {
+    public bool debug = false;
+
+    public static SettingsManager Instance { get; private set; }
+
     [SerializeField] private LevelDifficulty _levelDifficulty = LevelDifficulty.Hard;
     [SerializeField] private CapsuleRule _capsuleRule = CapsuleRule.InOrder;
     [SerializeField] private LayerMask _layerMaskForNextPlatform;
@@ -16,14 +20,18 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private int _maxNumberPlatforms = 50;
     [SerializeField] private int _offsetForPlatforms = 30;
     
+    void Awake()
+    {
+        Instance = this;    
+    }
     
-    public LevelDifficulty GetLevelDifficulty(bool debug = false)
+    public LevelDifficulty GetLevelDifficulty()
     {
         if(debug)
         {
             return _levelDifficulty;
         }
-
+        
         if(PlayerPrefs.HasKey("LevelDifficulty"))
         {
             return (LevelDifficulty)PlayerPrefs.GetInt("LevelDifficulty");
@@ -37,15 +45,10 @@ public class SettingsManager : MonoBehaviour
         PlayerPrefs.SetInt("LevelDifficulty", _levelDifficulty);
     }
 
-    public CapsuleRule GetCapsuleRule(bool debug = false)
+    public CapsuleRule GetCapsuleRule()
     {
         if (debug)
         {
-            if(_capsuleRule == CapsuleRule.Random)
-            {
-                return (CapsuleRule)Random.Range(1, 3);
-            }
-
             return _capsuleRule;
         }
 
@@ -69,7 +72,7 @@ public class SettingsManager : MonoBehaviour
         PlayerPrefs.SetInt("CapsuleRule", _capsuleRule);
     }
 
-    public float GetMoveSpeed(bool debug = false)
+    public float GetMoveSpeed()
     {
         if(debug)
         {
@@ -99,17 +102,17 @@ public class SettingsManager : MonoBehaviour
         return _moveSpeedMax;
     }
 
-    public float GetMaxNumberPlatforms()
+    public int GetMaxNumberPlatforms()
     {
         return _maxNumberPlatforms;
     }
 
-    public float GetOffsetForPlatforms()
+    public int GetOffsetForPlatforms()
     {
         return _offsetForPlatforms;
     }
 
-    public float GetLayerMaskForNextPlatforms()
+    public LayerMask GetLayerMaskForNextPlatforms()
     {
         return _layerMaskForNextPlatform;
     }

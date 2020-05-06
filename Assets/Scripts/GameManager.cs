@@ -13,16 +13,22 @@ public class GameManager : MonoBehaviour
     private int _offsetForPlatforms;
     private float _moveSpeed;
     
-    [SerializeField] private Ball _ball;
-    private List<GameObject> _platformsPool;
+    private SettingsManager _settingsManager;
+    private UIManager _uiManager;
 
+    [SerializeField] private Ball _ball;
+    [SerializeField] private Transform _cameraTransform;
+    [SerializeField] private GameObject _capsule;
+    
     [SerializeField] private GameObject _generalPlatformPrefab;
-    private GameObject _generalPlatform;
     [SerializeField] private GameObject[] _platformPrefabs;
     [SerializeField] private Transform[] _startPlatforms;
-    [SerializeField] private GameObject _capsule;
+    
+    private GameObject _generalPlatform;
     private GameObject _currentPlatformPrefab;
     private Transform _currentStartPlatform;
+
+    private List<GameObject> _platformsPool;
 
     private Vector3 _boxSizes;
     private float _displacement;
@@ -40,22 +46,30 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         _platformsPool = new List<GameObject>();
-
-        // Запрашивать информацию о настройках при старте сцены
-        //foreach (Toggle toggle in _levelDifficultyOption.ActiveToggles())
-        //{
-        //    Debug.Log(toggle);
-        //    toggle.isOn = true;
-        //}
-
-
-        SetLevelDifficulty(2);
-       
+        _settingsManager = SettingsManager.Instance;
+        _uiManager = UIManager.Instance;
         
-        //_startPanel.IsOpened = true;
-        //_backgroundStartPanel.SetActive(true);
+        SetSettings(_settingsManager, _uiManager, _ball);
     }
+    
+    public void SetSettings(SettingsManager settingsManager, UIManager uiManager, Ball ball)
+    {
+        _layerMaskForNextPlatform = settingsManager.GetLayerMaskForNextPlatforms();
+        _maxNumberPlatforms = settingsManager.GetMaxNumberPlatforms();
+        _offsetForPlatforms = settingsManager.GetOffsetForPlatforms();
+        
+        uiManager.SetMoveSpeedToUI(settingsManager.GetMoveSpeedMin(), 
+                                        settingsManager.GetMoveSpeedMax(), 
+                                                settingsManager.GetMoveSpeed());
 
+        _levelDifficulty = settingsManager.GetLevelDifficulty();
+        _capsuleRule = settingsManager.GetCapsuleRule();
+        ball.ChangeVelocity(settingsManager.GetMoveSpeed());
+
+        uiManager.SetLevelDifficultyToUI(_levelDifficulty);
+        uiManager.SetCapsuleRuleToUI(_capsuleRule);
+    }
+    
     public void StartGame()
     { 
         _numberOfPoints = 0;

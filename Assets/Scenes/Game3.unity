@@ -662,7 +662,7 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Toggle+ToggleEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!1 &205611030
 GameObject:
   m_ObjectHideFlags: 0
@@ -692,7 +692,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34f9ab628809ad7408998a54f9f16ce1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: {fileID: 0}
+  _levelDifficulty: {fileID: 246336055}
+  _capsuleRule: {fileID: 776908823}
+  _moveSpeed: {fileID: 1464207438}
+  _score: {fileID: 715666687}
+  _startPanel: {fileID: 571873962}
+  _backgroundMainPanel: {fileID: 663944575}
 --- !u!4 &205611032
 Transform:
   m_ObjectHideFlags: 0
@@ -2163,7 +2168,7 @@ GameObject:
   - component: {fileID: 663944577}
   - component: {fileID: 663944576}
   m_Layer: 5
-  m_Name: Background
+  m_Name: BackgroundMainPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2826,7 +2831,7 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Toggle+ToggleEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!1 &805517454
 GameObject:
   m_ObjectHideFlags: 0
@@ -3183,20 +3188,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ball: {fileID: 0}
+  _cameraTransform: {fileID: 0}
+  _capsule: {fileID: 0}
   _generalPlatformPrefab: {fileID: 0}
   _platformPrefabs: []
   _startPlatforms: []
-  _capsule: {fileID: 0}
-  _startPanel: {fileID: 0}
-  _backgroundStartPanel: {fileID: 0}
-  _pointsUI: {fileID: 0}
-  _levelDifficultyOption: {fileID: 0}
-  layerMaskForLastPlatform:
-    serializedVersion: 2
-    m_Bits: 0
-  _layerMaskForNextPlatform:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!4 &857511977
 Transform:
   m_ObjectHideFlags: 0
@@ -4370,13 +4366,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17035fdf07810774b982ac910f9ce111, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelDifficulty: 4
-  _capsuleRule: 2
+  debug: 0
+  _levelDifficulty: 0
+  _capsuleRule: 1
+  _layerMaskForNextPlatform:
+    serializedVersion: 2
+    m_Bits: 0
   _moveSpeed: 5
   _moveSpeedMin: 3
   _moveSpeedMax: 7
-  maxNumberPlatforms: 50
-  offsetForPlatforms: 30
+  _maxNumberPlatforms: 50
+  _offsetForPlatforms: 30
 --- !u!4 &1235876894
 Transform:
   m_ObjectHideFlags: 0
@@ -4708,7 +4708,7 @@ MonoBehaviour:
   m_MinValue: 1
   m_MaxValue: 100
   m_WholeNumbers: 1
-  m_Value: 33
+  m_Value: 45
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:

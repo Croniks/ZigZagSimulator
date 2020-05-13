@@ -19,17 +19,27 @@ public class UIManager : MonoBehaviour
         Instance = this; 
     }
     
-    public void SetMoveSpeedToUI(float speedMin, float speedMax, float speed)
+    public void SetMoveSpeedToUI(float value)
     {
-        if(speedMin >= speedMax)
+        _moveSpeed.value = value;
+    }
+    
+    public float TransformRealMoveSpeedToUIValue(float speedMin, float speedMax, float speed)
+    {
+        if (speedMin >= speedMax)
         {
             throw new Exception("The minimum speed is greater than or equal to the maximum!");
         }
         
         speed = Mathf.Clamp(speed, speedMin, speedMax);
-        _moveSpeed.value = (((speed - speedMin) / (speedMax - speedMin)) * 100);
+        return (((speed - speedMin) / (speedMax - speedMin)) * _moveSpeed.maxValue);
     }
-    
+
+    public float TransformUIValueToRealMoveSpeed(float speedMin, float speedMax, float value)
+    {
+        return speedMin + (((speedMax - speedMin) * value) / _moveSpeed.maxValue);
+    }
+
     public void SetLevelDifficultyToUI(LevelDifficulty levelDifficulty)
     { 
         _levelDifficulty.GetComponentsInChildren<Toggle>()[(int)levelDifficulty].isOn = true;

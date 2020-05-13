@@ -6,12 +6,16 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    private float _moveSpeed;
+    private float _newMoveSpeed;
     private LevelDifficulty _levelDifficulty;
+    private LevelDifficulty _newLevelDifficulty;
     private CapsuleRule _capsuleRule;
+    private CapsuleRule _newCapsuleRule;
+
     private LayerMask _layerMaskForNextPlatform;
     private int _maxNumberPlatforms;
     private int _offsetForPlatforms;
-    private float _moveSpeed;
     
     private SettingsManager _settingsManager;
     private UIManager _uiManager;
@@ -57,19 +61,62 @@ public class GameManager : MonoBehaviour
         _layerMaskForNextPlatform = settingsManager.GetLayerMaskForNextPlatforms();
         _maxNumberPlatforms = settingsManager.GetMaxNumberPlatforms();
         _offsetForPlatforms = settingsManager.GetOffsetForPlatforms();
-        
-        uiManager.SetMoveSpeedToUI(settingsManager.GetMoveSpeedMin(), 
-                                        settingsManager.GetMoveSpeedMax(), 
-                                                settingsManager.GetMoveSpeed());
 
-        _levelDifficulty = settingsManager.GetLevelDifficulty();
-        _capsuleRule = settingsManager.GetCapsuleRule();
-        ball.ChangeVelocity(settingsManager.GetMoveSpeed());
+        _levelDifficulty = _newLevelDifficulty = settingsManager.GetLevelDifficulty();
+        _capsuleRule = _newCapsuleRule = settingsManager.GetCapsuleRule();
+        _moveSpeed = _newMoveSpeed = settingsManager.GetMoveSpeed();
+        
+        ball.ChangeVelocity(_moveSpeed);
+
+        uiManager.SetMoveSpeedToUI(
+            uiManager.TransformRealMoveSpeedToUIValue(settingsManager.GetMoveSpeedMin(),
+                                                        settingsManager.GetMoveSpeedMax(),
+                                                                                _moveSpeed)
+        );
 
         uiManager.SetLevelDifficultyToUI(_levelDifficulty);
         uiManager.SetCapsuleRuleToUI(_capsuleRule);
     }
+
+    public void ChangeLevelDifficulty(int index)
+    {
+        _newLevelDifficulty = (LevelDifficulty)index;
+    }
+
+    public void ChangeCapsuleRule(int index)
+    {
+        _newCapsuleRule = (CapsuleRule)index;
+    }
     
+    public void ChangeMoveSpeed(float value)
+    {
+        _newMoveSpeed = _uiManager.TransformUIValueToRealMoveSpeed(_settingsManager.GetMoveSpeedMin(), 
+                                                                    _settingsManager.GetMoveSpeedMax(), 
+                                                                                                value);
+    }
+
+    public void SaveSettings()
+    {
+        if(_levelDifficulty != _newLevelDifficulty)
+        {
+            _settingsManager.SetLevelDifficulty((int)_newLevelDifficulty);
+            _levelDifficulty = _newLevelDifficulty;
+        }
+
+        if(_capsuleRule != _newCapsuleRule)
+        {
+            _settingsManager.SetCapsuleRule((int)_newCapsuleRule);
+            _capsuleRule = _newCapsuleRule;
+        }
+
+        if(_moveSpeed != _newMoveSpeed)
+        {
+            _settingsManager.SetMoveSpeed(_newMoveSpeed);
+            _moveSpeed = _newMoveSpeed;
+            _ball.ChangeVelocity(_moveSpeed);
+        }
+    }
+
     public void StartGame()
     { 
         _numberOfPoints = 0;
@@ -116,11 +163,8 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
     
-    public void SetLevelDifficulty(int index)
-    {
-        _levelDifficulty = (LevelDifficulty)index;
-    }
- 
+    
+
     private void DefineLevelDifficulty(LevelDifficulty levelDifficulty)
     {
         _currentPlatformPrefab = _platformPrefabs[(int)levelDifficulty];

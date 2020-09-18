@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Events;
 
 
 public enum LevelDifficulty { Easy = 0, Normal = 1, Hard = 2 }
@@ -19,30 +20,40 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private float _moveSpeedMax = 7f;
     [SerializeField] private int _maxNumberPlatforms = 50;
     [SerializeField] private int _offsetForPlatforms = 30;
-    
+
+     
     void Awake()
     {
         Instance = this;    
     }
-    
+
+    void Start()
+    {
+        EventAggregator.BallVelocityChangedEvent.Subscribe(SetMoveSpeed);
+        EventAggregator.LevelDifficultyChangedEvent.Subscribe(SetLevelDifficulty);
+        EventAggregator.CapsuleRuleChangedEvent.Subscribe(SetCapsuleRule);
+    }
+
     public LevelDifficulty GetLevelDifficulty()
     {
-        if(debug)
+        if (debug)
         {
             return _levelDifficulty;
         }
-        
-        if(PlayerPrefs.HasKey("LevelDifficulty"))
+
+        if (PlayerPrefs.HasKey("LevelDifficulty"))
         {
-            return (LevelDifficulty)PlayerPrefs.GetInt("LevelDifficulty");
+            _levelDifficulty = (LevelDifficulty)PlayerPrefs.GetInt("LevelDifficulty");
         }
-        
+
         return _levelDifficulty;
     }
     
-    public void SetLevelDifficulty(int _levelDifficulty)
+    public void SetLevelDifficulty(int levelDifficulty)
     {
-        PlayerPrefs.SetInt("LevelDifficulty", _levelDifficulty);
+        PlayerPrefs.SetInt("LevelDifficulty", levelDifficulty);
+        PlayerPrefs.Save();
+        //Debug.Log("Working levelDifficulty");
     }
 
     public CapsuleRule GetCapsuleRule()
@@ -54,22 +65,16 @@ public class SettingsManager : MonoBehaviour
 
         if (PlayerPrefs.HasKey("CapsuleRule"))
         {
-            int _capsuleRule = PlayerPrefs.GetInt("CapsuleRule");
-
-            if(_capsuleRule == 0)
-            {
-                _capsuleRule = Random.Range(1, 3);
-            }
-            
-            return (CapsuleRule)_capsuleRule;
+            _capsuleRule = (CapsuleRule)PlayerPrefs.GetInt("CapsuleRule"); 
         }
-
+        
         return _capsuleRule;
     }
 
-    public void SetCapsuleRule(int _capsuleRule)
+    public void SetCapsuleRule(int capsuleRule)
     {
-        PlayerPrefs.SetInt("CapsuleRule", _capsuleRule);
+        PlayerPrefs.SetInt("CapsuleRule", capsuleRule);
+        PlayerPrefs.Save();
     }
 
     public float GetMoveSpeed()
@@ -90,6 +95,8 @@ public class SettingsManager : MonoBehaviour
     public void SetMoveSpeed(float moveSpeed)
     {
         PlayerPrefs.SetFloat("MoveSpeed", moveSpeed);
+        PlayerPrefs.Save();
+        //Debug.Log("Working movespeed");
     }
 
     public float GetMoveSpeedMin()

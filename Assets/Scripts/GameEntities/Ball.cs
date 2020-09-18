@@ -25,7 +25,6 @@ public class Ball : MonoBehaviour
         enabled = false;
 
         Rigidbody rb = GetComponent<Rigidbody>();
-       
     }
     
     void Update()

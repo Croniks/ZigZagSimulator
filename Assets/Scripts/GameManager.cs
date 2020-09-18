@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Events;
 
 
 public class GameManager : MonoBehaviour
@@ -7,12 +8,9 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     private float _moveSpeed;
-    private float _newMoveSpeed;
     private LevelDifficulty _levelDifficulty;
-    private LevelDifficulty _newLevelDifficulty;
     private CapsuleRule _capsuleRule;
-    private CapsuleRule _newCapsuleRule;
-
+    
     private LayerMask _layerMaskForNextPlatform;
     private int _maxNumberPlatforms;
     private int _offsetForPlatforms;
@@ -21,7 +19,6 @@ public class GameManager : MonoBehaviour
     private UIManager _uiManager;
 
     [SerializeField] private Ball _ball;
-    [SerializeField] private Transform _cameraTransform;
     [SerializeField] private GameObject _capsule;
     
     [SerializeField] private GameObject _generalPlatformPrefab;
@@ -37,14 +34,17 @@ public class GameManager : MonoBehaviour
     private Vector3 _boxSizes;
     private float _displacement;
     private Vector3 _lastPlatformPosition;
-    
-    private int _numberOfPoints;
+
     private int _n = 0; 
 
     
     void Awake()
     {
         Instance = this;
+
+        EventAggregator.BallVelocityChangedEvent = new BallVelocityChangedEvent();
+        EventAggregator.LevelDifficultyChangedEvent = new LevelDifficultyChangedEvent();
+        EventAggregator.CapsuleRuleChangedEvent = new CapsuleRuleChangedEvent();
     }
     
     void Start()
@@ -52,74 +52,54 @@ public class GameManager : MonoBehaviour
         _platformsPool = new List<GameObject>();
         _settingsManager = SettingsManager.Instance;
         _uiManager = UIManager.Instance;
-        
-        SetSettings(_settingsManager, _uiManager, _ball);
+       
+        EventAggregator.BallVelocityChangedEvent.Subscribe(ChangeMoveSpeed);
+        EventAggregator.LevelDifficultyChangedEvent.Subscribe(ChangeLevelDifficulty);
+        EventAggregator.CapsuleRuleChangedEvent.Subscribe(ChangeCapsuleRule);
+
+        SetSettings(_ball);
     }
     
-    public void SetSettings(SettingsManager settingsManager, UIManager uiManager, Ball ball)
+    public void SetSettings(Ball ball)
     {
-        _layerMaskForNextPlatform = settingsManager.GetLayerMaskForNextPlatforms();
-        _maxNumberPlatforms = settingsManager.GetMaxNumberPlatforms();
-        _offsetForPlatforms = settingsManager.GetOffsetForPlatforms();
+        _layerMaskForNextPlatform = _settingsManager.GetLayerMaskForNextPlatforms();
+        _maxNumberPlatforms = _settingsManager.GetMaxNumberPlatforms();
+        _offsetForPlatforms = _settingsManager.GetOffsetForPlatforms();
 
-        _levelDifficulty = _newLevelDifficulty = settingsManager.GetLevelDifficulty();
-        _capsuleRule = _newCapsuleRule = settingsManager.GetCapsuleRule();
-        _moveSpeed = _newMoveSpeed = settingsManager.GetMoveSpeed();
+        _levelDifficulty = _settingsManager.GetLevelDifficulty();
+        _capsuleRule = _settingsManager.GetCapsuleRule();
+        _moveSpeed = _settingsManager.GetMoveSpeed();
         
         ball.ChangeVelocity(_moveSpeed);
 
-        uiManager.SetMoveSpeedToUI(
-            uiManager.TransformRealMoveSpeedToUIValue(settingsManager.GetMoveSpeedMin(),
-                                                        settingsManager.GetMoveSpeedMax(),
+        _uiManager.SetMoveSpeedToUI(
+            _uiManager.TransformRealMoveSpeedToUIValue(_settingsManager.GetMoveSpeedMin(),
+                                                        _settingsManager.GetMoveSpeedMax(),
                                                                                 _moveSpeed)
         );
 
-        uiManager.SetLevelDifficultyToUI(_levelDifficulty);
-        uiManager.SetCapsuleRuleToUI(_capsuleRule);
+        _uiManager.SetLevelDifficultyToUI(_levelDifficulty);
+        _uiManager.SetCapsuleRuleToUI(_capsuleRule);
     }
 
     public void ChangeLevelDifficulty(int index)
     {
-        _newLevelDifficulty = (LevelDifficulty)index;
+        _levelDifficulty = (LevelDifficulty)index;
     }
 
     public void ChangeCapsuleRule(int index)
     {
-        _newCapsuleRule = (CapsuleRule)index;
+        _capsuleRule = (CapsuleRule)index;
     }
     
     public void ChangeMoveSpeed(float value)
     {
-        _newMoveSpeed = _uiManager.TransformUIValueToRealMoveSpeed(_settingsManager.GetMoveSpeedMin(), 
-                                                                    _settingsManager.GetMoveSpeedMax(), 
-                                                                                                value);
+        _moveSpeed = value;
     }
-
-    public void SaveSettings()
-    {
-        if(_levelDifficulty != _newLevelDifficulty)
-        {
-            _settingsManager.SetLevelDifficulty((int)_newLevelDifficulty);
-            _levelDifficulty = _newLevelDifficulty;
-        }
-
-        if(_capsuleRule != _newCapsuleRule)
-        {
-            _settingsManager.SetCapsuleRule((int)_newCapsuleRule);
-            _capsuleRule = _newCapsuleRule;
-        }
-
-        if(_moveSpeed != _newMoveSpeed)
-        {
-            _settingsManager.SetMoveSpeed(_newMoveSpeed);
-            _moveSpeed = _newMoveSpeed;
-            _ball.ChangeVelocity(_moveSpeed);
-        }
-    }
-
+    
     public void StartGame()
     { 
-        _numberOfPoints = 0;
+        _uiManager.SetScore(0);
 
         DefineLevelDifficulty(_levelDifficulty);
         //BuildPlatforms(_maxNumberPlatforms + _offSetForPlatforms);

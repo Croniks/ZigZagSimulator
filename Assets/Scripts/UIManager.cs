@@ -41,7 +41,7 @@ public class UIManager : MonoBehaviour
     }
 
     public void SetLevelDifficultyToUI(LevelDifficulty levelDifficulty)
-    { 
+    {
         _levelDifficulty.GetComponentsInChildren<Toggle>()[(int)levelDifficulty].isOn = true;
     }
     
@@ -50,7 +50,7 @@ public class UIManager : MonoBehaviour
         _capsuleRule.GetComponentsInChildren<Toggle>()[(int)capsuleRule].isOn = true;
     }
     
-    public void ChangeScore(int number)
+    public void SetScore(int number)
     {
         _score.text = number.ToString();
     }

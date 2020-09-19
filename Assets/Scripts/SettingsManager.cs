@@ -34,6 +34,13 @@ public class SettingsManager : MonoBehaviour
         EventAggregator.CapsuleRuleChangedEvent.Subscribe(SetCapsuleRule);
     }
 
+    void OnApplicationQuit()
+    {
+        EventAggregator.BallVelocityChangedEvent.Unsubscribe(SetMoveSpeed);
+        EventAggregator.LevelDifficultyChangedEvent.Unsubscribe(SetLevelDifficulty);
+        EventAggregator.CapsuleRuleChangedEvent.Unsubscribe(SetCapsuleRule);
+    }
+
     public LevelDifficulty GetLevelDifficulty()
     {
         if (debug)
@@ -52,8 +59,6 @@ public class SettingsManager : MonoBehaviour
     public void SetLevelDifficulty(int levelDifficulty)
     {
         PlayerPrefs.SetInt("LevelDifficulty", levelDifficulty);
-        PlayerPrefs.Save();
-        //Debug.Log("Working levelDifficulty");
     }
 
     public CapsuleRule GetCapsuleRule()
@@ -74,7 +79,6 @@ public class SettingsManager : MonoBehaviour
     public void SetCapsuleRule(int capsuleRule)
     {
         PlayerPrefs.SetInt("CapsuleRule", capsuleRule);
-        PlayerPrefs.Save();
     }
 
     public float GetMoveSpeed()
@@ -95,8 +99,6 @@ public class SettingsManager : MonoBehaviour
     public void SetMoveSpeed(float moveSpeed)
     {
         PlayerPrefs.SetFloat("MoveSpeed", moveSpeed);
-        PlayerPrefs.Save();
-        //Debug.Log("Working movespeed");
     }
 
     public float GetMoveSpeedMin()

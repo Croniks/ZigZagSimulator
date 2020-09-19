@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Events;
 
 
 public class UIManager : MonoBehaviour
@@ -17,6 +18,27 @@ public class UIManager : MonoBehaviour
     void Awake()
     {
         Instance = this; 
+    }
+
+    public void InitiateBallVelocityChangedEvent()
+    {
+        var moveSpeed = TransformUIValueToRealMoveSpeed(
+            SettingsManager.Instance.GetMoveSpeedMin(),
+                SettingsManager.Instance.GetMoveSpeedMax(),
+                                                _moveSpeed.value
+        );
+
+        EventAggregator.BallVelocityChangedEvent?.Publish(moveSpeed);
+    }
+    
+    public void InitiateCapsuleRuleChangedEvent(int capsuleRule)
+    {
+        EventAggregator.CapsuleRuleChangedEvent?.Publish(capsuleRule);
+    }
+    
+    public void InitiatLevelDifficultyChangedEvent(int levelDifficulty)
+    {
+        EventAggregator.LevelDifficultyChangedEvent?.Publish(levelDifficulty);
     }
     
     public void SetMoveSpeedToUI(float value)

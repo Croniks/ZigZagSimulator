@@ -12,6 +12,11 @@ namespace Events
         {
             _callbacks.Add(callback);
         }
+
+        public void Unsubscribe(Action<int> callback)
+        {
+            _callbacks.Remove(callback);
+        }
         
         public void Publish(int levelDifficulty)
         {

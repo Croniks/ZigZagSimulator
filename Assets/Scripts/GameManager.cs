@@ -12,8 +12,6 @@ public class GameManager : MonoBehaviour
     private CapsuleRule _capsuleRule;
     
     private LayerMask _layerMaskForNextPlatform;
-    private int _maxNumberPlatforms;
-    private int _offsetForPlatforms;
     
     private SettingsManager _settingsManager;
     private UIManager _uiManager;
@@ -59,13 +57,18 @@ public class GameManager : MonoBehaviour
 
         SetSettings(_ball);
     }
-    
+
+    void OnApplicationQuit()
+    {
+        EventAggregator.BallVelocityChangedEvent.Unsubscribe(ChangeMoveSpeed);
+        EventAggregator.LevelDifficultyChangedEvent.Unsubscribe(ChangeLevelDifficulty);
+        EventAggregator.CapsuleRuleChangedEvent.Unsubscribe(ChangeCapsuleRule);
+    }
+
     public void SetSettings(Ball ball)
     {
         _layerMaskForNextPlatform = _settingsManager.GetLayerMaskForNextPlatforms();
-        _maxNumberPlatforms = _settingsManager.GetMaxNumberPlatforms();
-        _offsetForPlatforms = _settingsManager.GetOffsetForPlatforms();
-
+        
         _levelDifficulty = _settingsManager.GetLevelDifficulty();
         _capsuleRule = _settingsManager.GetCapsuleRule();
         _moveSpeed = _settingsManager.GetMoveSpeed();
@@ -77,7 +80,7 @@ public class GameManager : MonoBehaviour
                                                         _settingsManager.GetMoveSpeedMax(),
                                                                                 _moveSpeed)
         );
-
+        
         _uiManager.SetLevelDifficultyToUI(_levelDifficulty);
         _uiManager.SetCapsuleRuleToUI(_capsuleRule);
     }
@@ -98,12 +101,12 @@ public class GameManager : MonoBehaviour
     }
     
     public void StartGame()
-    { 
-        _uiManager.SetScore(0);
+    {
+        BuildGameAccordingDifficultyLevel(_levelDifficulty);
 
-        DefineLevelDifficulty(_levelDifficulty);
+
         //BuildPlatforms(_maxNumberPlatforms + _offSetForPlatforms);
-        
+
         _ball.gameObject.SetActive(true);
     }
     
@@ -142,10 +145,10 @@ public class GameManager : MonoBehaviour
     {
         Application.Quit();
     }
-    
-    
 
-    private void DefineLevelDifficulty(LevelDifficulty levelDifficulty)
+
+    //build a level according to the difficulty level
+    private void BuildGameAccordingDifficultyLevel(LevelDifficulty levelDifficulty)
     {
         _currentPlatformPrefab = _platformPrefabs[(int)levelDifficulty];
         _currentStartPlatform = _startPlatforms[(int)levelDifficulty];

@@ -33,8 +33,6 @@ public class GameManager : MonoBehaviour
     private float _displacement;
     private Vector3 _lastPlatformPosition;
 
-    private int _n = 0; 
-
     
     void Awake()
     {
@@ -43,6 +41,7 @@ public class GameManager : MonoBehaviour
         EventAggregator.BallVelocityChangedEvent = new BallVelocityChangedEvent();
         EventAggregator.LevelDifficultyChangedEvent = new LevelDifficultyChangedEvent();
         EventAggregator.CapsuleRuleChangedEvent = new CapsuleRuleChangedEvent();
+        EventAggregator.GameOverEvent = new GameOverEvent();
     }
     
     void Start()
@@ -54,10 +53,11 @@ public class GameManager : MonoBehaviour
         EventAggregator.BallVelocityChangedEvent.Subscribe(ChangeMoveSpeed);
         EventAggregator.LevelDifficultyChangedEvent.Subscribe(ChangeLevelDifficulty);
         EventAggregator.CapsuleRuleChangedEvent.Subscribe(ChangeCapsuleRule);
+        EventAggregator.GameOverEvent.Subscribe(FinishGame);
 
-        SetSettings(_ball);
+        SetSettings();
     }
-
+    
     void OnApplicationQuit()
     {
         EventAggregator.BallVelocityChangedEvent.Unsubscribe(ChangeMoveSpeed);
@@ -65,15 +65,14 @@ public class GameManager : MonoBehaviour
         EventAggregator.CapsuleRuleChangedEvent.Unsubscribe(ChangeCapsuleRule);
     }
 
-    public void SetSettings(Ball ball)
+    public void SetSettings()
     {
         _layerMaskForNextPlatform = _settingsManager.GetLayerMaskForNextPlatforms();
         
         _levelDifficulty = _settingsManager.GetLevelDifficulty();
         _capsuleRule = _settingsManager.GetCapsuleRule();
-        _moveSpeed = _settingsManager.GetMoveSpeed();
-        
-        ball.ChangeVelocity(_moveSpeed);
+
+        _ball.ChangeVelocity(_settingsManager.GetMoveSpeed());
 
         _uiManager.SetMoveSpeedToUI(
             _uiManager.TransformRealMoveSpeedToUIValue(_settingsManager.GetMoveSpeedMin(),
@@ -95,48 +94,27 @@ public class GameManager : MonoBehaviour
         _capsuleRule = (CapsuleRule)index;
     }
     
-    public void ChangeMoveSpeed(float value)
+    public void ChangeMoveSpeed(float moveSpeed)
     {
-        _moveSpeed = value;
+        _ball.ChangeVelocity(moveSpeed);
     }
     
     public void StartGame()
     {
-        BuildGameAccordingDifficultyLevel(_levelDifficulty);
+        ApplySettings(_levelDifficulty);
+        BuildPlatforms(_settingsManager.GetMaxNumberPlatforms() + _settingsManager.GetOffsetForPlatforms());
 
-
-        //BuildPlatforms(_maxNumberPlatforms + _offSetForPlatforms);
-
-        _ball.gameObject.SetActive(true);
     }
     
-    public void StartMoving()
+    public void FinishGame()
     {
-        _ball.enabled = true;
-    }
-
-    public void AcivateStartPanel(bool flag)
-    {
-        //_startPanel.IsOpened = flag;
-        //_backgroundStartPanel.SetActive(flag);
-    }
-
-    public void EndGame()
-    {
-        //_startPanel.IsOpened = true;
-        //_backgroundStartPanel.SetActive(true);
+        
     }
     
     public void RestartGame()
     {
-        // Удалить предыдущие платформы
-        foreach(var platform in _platformsPool)
-        {
-            Destroy(platform);
-        }
-        
-        _platformsPool.Clear();
-        
+        DeletePlatforms();
+       
         _ball.enabled = false;
         StartGame();
     }
@@ -146,9 +124,18 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
+    private void DeletePlatforms()
+    {
+        foreach (var platform in _platformsPool)
+        {
+            Destroy(platform);
+        }
+        
+        _platformsPool.Clear();
+    }
 
     //build a level according to the difficulty level
-    private void BuildGameAccordingDifficultyLevel(LevelDifficulty levelDifficulty)
+    private void ApplySettings(LevelDifficulty levelDifficulty)
     {
         _currentPlatformPrefab = _platformPrefabs[(int)levelDifficulty];
         _currentStartPlatform = _startPlatforms[(int)levelDifficulty];
@@ -197,7 +184,7 @@ public class GameManager : MonoBehaviour
             
             if ((i + 1) % 5 == 0)
             {
-                CreateCapsule(CollectionforCaplsule);
+                CreateCapsules(CollectionforCaplsule);
             }
         }
     }
@@ -225,7 +212,7 @@ public class GameManager : MonoBehaviour
         return !(hitColliders.Length > 0);
     }
     
-    private void CreateCapsule(GameObject[] gameObjects)
+    private void CreateCapsules(GameObject[] gameObjects)
     {
         GameObject gameObjForCapsule = null;
         GameObject capsule = null;
@@ -236,9 +223,9 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            gameObjForCapsule = gameObjects[_n];
-            _n++;
-            if(_n > 4) _n = 0;
+            //gameObjForCapsule = gameObjects[_n];
+            //_n++;
+            //if(_n > 4) _n = 0;
         }
         
         Vector3 pos = new Vector3(gameObjForCapsule.transform.position.x, 

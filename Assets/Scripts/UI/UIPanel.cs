@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 
+
 [RequireComponent(typeof(Animator))]
 public class UIPanel : MonoBehaviour
 {
     private Animator _animator;
-    
     
     public bool IsOpened
     {

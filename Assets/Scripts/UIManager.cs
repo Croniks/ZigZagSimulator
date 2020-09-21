@@ -20,6 +20,11 @@ public class UIManager : MonoBehaviour
         Instance = this; 
     }
 
+    void Start()
+    {
+        EventAggregator.GameOverEvent.Subscribe(GameOver);
+    }
+    
     public void InitiateBallVelocityChangedEvent()
     {
         var moveSpeed = TransformUIValueToRealMoveSpeed(
@@ -41,6 +46,12 @@ public class UIManager : MonoBehaviour
         EventAggregator.LevelDifficultyChangedEvent?.Publish(levelDifficulty);
     }
     
+    public void GameOver()
+    {
+        _startPanel.GetComponent<UIPanel>().IsOpened = true;
+        _backgroundMainPanel.gameObject.SetActive(true);
+    }
+
     public void SetMoveSpeedToUI(float value)
     {
         _moveSpeed.value = value;

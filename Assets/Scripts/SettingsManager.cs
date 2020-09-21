@@ -18,6 +18,8 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private float _moveSpeedMin = 3f;
     [SerializeField] private float _moveSpeedMax = 7f;
+    [SerializeField] private float _fallingTime = 2f;
+    [SerializeField] private float _fallingDistance = 4f;
     [SerializeField] private int _maxNumberPlatforms = 50;
     [SerializeField] private int _offsetForPlatforms = 30;
 
@@ -109,6 +111,16 @@ public class SettingsManager : MonoBehaviour
     public float GetMoveSpeedMax()
     {
         return _moveSpeedMax;
+    }
+
+    public float GetFallingTime()
+    {
+        return _fallingTime;
+    }
+
+    public float GetFallingDistance()
+    {
+        return _fallingDistance;
     }
 
     public int GetMaxNumberPlatforms()

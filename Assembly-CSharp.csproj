@@ -63,6 +63,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Events\GameEvents\GameOverEvent\GameOverEvent.cs" />
     <Compile Include="Assets\Scripts\Events\UIEvents\BallVelocity\BallVelocityChangedEvent.cs" />
     <Compile Include="Assets\Scripts\Events\UIEvents\CapsuleRule\CapsuleRuleChangedEvent.cs" />
     <Compile Include="Assets\Scripts\Events\UIEvents\EventAggregator.cs" />

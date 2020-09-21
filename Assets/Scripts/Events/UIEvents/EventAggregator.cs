@@ -5,5 +5,6 @@
         public static LevelDifficultyChangedEvent LevelDifficultyChangedEvent;
         public static CapsuleRuleChangedEvent CapsuleRuleChangedEvent;
         public static BallVelocityChangedEvent BallVelocityChangedEvent;
+        public static GameOverEvent GameOverEvent;
     }
 }

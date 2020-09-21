@@ -4,20 +4,12 @@ using UnityEngine.EventSystems;
 
 public class UITransition : MonoBehaviour, IPointerClickHandler
 {
-    private UIPanel _current;
+    [SerializeField] private UIPanel _current;
+    [SerializeField] private UIPanel _next;
     
-    [SerializeField]
-    private UIPanel _next;
-
-
-    private void Awake()
-    {
-        _current = GetComponentInParent<UIPanel>();
-    }
-
     public void OnPointerClick(PointerEventData data)
     {
-        _current.IsOpened = false;
-        _next.IsOpened = true;
+        if(_current != null) { _current.IsOpened = false; }
+        if(_next != null) { _next.IsOpened = true; }
     }
 }

@@ -12,7 +12,7 @@ public class Ball : MonoBehaviour
     private Vector3 _startingPosition;
     private float _cameraY;
     private float _selfY;
-    private Vector3 _ballDirection = Vector3.right;
+    private Vector3 _ballDirection = Vector3.zero;
     private bool _isForward = true;
 
     
@@ -23,6 +23,7 @@ public class Ball : MonoBehaviour
         _startingPosition = _selfTransform.position;
         _selfY = _selfTransform.position.y;
         _cameraY = _cameraTransform.position.y;
+        enabled = false;
     }
     
     void Update()
@@ -31,7 +32,6 @@ public class Ball : MonoBehaviour
         {
             EventAggregator.GameOverEvent.Publish();
         }
-
         
         if (Input.GetMouseButtonUp(0))
         {
@@ -57,12 +57,14 @@ public class Ball : MonoBehaviour
 
     public void StartMoving()
     {
+        enabled = true;
         _ballDirection = Vector3.right;
     }
     
     private void StopMoving()
     {
         _ballDirection = Vector3.zero;
+        enabled = false;
     }
 
     private void DropBall(float fallingTime, float fallingDistance)

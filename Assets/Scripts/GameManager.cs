@@ -6,8 +6,7 @@ using Events;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-
-    private float _moveSpeed;
+    
     private LevelDifficulty _levelDifficulty;
     private CapsuleRule _capsuleRule;
     
@@ -76,8 +75,8 @@ public class GameManager : MonoBehaviour
 
         _uiManager.SetMoveSpeedToUI(
             _uiManager.TransformRealMoveSpeedToUIValue(_settingsManager.GetMoveSpeedMin(),
-                                                        _settingsManager.GetMoveSpeedMax(),
-                                                                                _moveSpeed)
+                                                         _settingsManager.GetMoveSpeedMax(),
+                                                             _settingsManager.GetMoveSpeed())
         );
         
         _uiManager.SetLevelDifficultyToUI(_levelDifficulty);
@@ -103,7 +102,8 @@ public class GameManager : MonoBehaviour
     {
         ApplySettings(_levelDifficulty);
         BuildPlatforms(_settingsManager.GetMaxNumberPlatforms() + _settingsManager.GetOffsetForPlatforms());
-
+        
+        _ball.StartMoving();
     }
     
     public void FinishGame()
@@ -182,10 +182,10 @@ public class GameManager : MonoBehaviour
 
             CollectionforCaplsule[i % 5] = platform;
             
-            if ((i + 1) % 5 == 0)
-            {
-                CreateCapsules(CollectionforCaplsule);
-            }
+            //if ((i + 1) % 5 == 0)
+            //{
+            //    CreateCapsules(CollectionforCaplsule);
+            //}
         }
     }
     

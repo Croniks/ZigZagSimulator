@@ -11,7 +11,7 @@ public class PlatformTrigger : MonoBehaviour
     void Start()
     {
         _gameManager = GameManager.Instance;
-        //_maxNumberPlatforms = _currentNumberPlatforms = _gameManager.maxNumberPlatforms;
+        _maxNumberPlatforms = _currentNumberPlatforms = SettingsManager.Instance.GetMaxNumberPlatforms();
     }
 
     void OnTriggerExit(Collider other)

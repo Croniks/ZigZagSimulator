@@ -68,7 +68,8 @@
     <Compile Include="Assets\Scripts\Events\UIEvents\CapsuleRule\CapsuleRuleChangedEvent.cs" />
     <Compile Include="Assets\Scripts\Events\UIEvents\EventAggregator.cs" />
     <Compile Include="Assets\Scripts\Events\UIEvents\LevelDifficulty\LevelDifficultyChangedEvent.cs" />
-    <Compile Include="Assets\Scripts\GameEntities\Ball.cs" />
+    <Compile Include="Assets\Scripts\GameEntities\BallController.cs" />
+    <Compile Include="Assets\Scripts\GameEntities\CameraController.cs" />
     <Compile Include="Assets\Scripts\GameEntities\Capsule.cs" />
     <Compile Include="Assets\Scripts\GameEntities\FallTrigger.cs" />
     <Compile Include="Assets\Scripts\GameEntities\Platform.cs" />

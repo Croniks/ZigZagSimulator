@@ -2,12 +2,11 @@
 using Events;
 
 
-public class Ball : MonoBehaviour
+public class BallController : MonoBehaviour
 {
     [SerializeField] private Transform _cameraTransform;
     private float _ballVelocity;
     
-    private float _camerOffset = 1f;
     private Transform _selfTransform;
     private Vector3 _startingPosition;
     private float _cameraY;
@@ -39,7 +38,6 @@ public class Ball : MonoBehaviour
         }
         
         _selfTransform.Translate(_ballDirection * Time.deltaTime * _ballVelocity, Space.World);
-        _cameraTransform.position = CalculateCameraPosition();
     }
     
     void LateUpdate()
@@ -47,27 +45,20 @@ public class Ball : MonoBehaviour
         if ((_selfY - _selfTransform.position.y) > 0.5f)
         {
             EventAggregator.GameOverEvent.Publish();
-
-            var settingsManager = SettingsManager.Instance;
-            DropBall(settingsManager.GetFallingTime(), settingsManager.GetFallingDistance());
-            StopMoving();
-            MoveBallToStartingPosition();
         }
     }
 
     public void StartMoving()
-    {
-        enabled = true;
+    { 
         _ballDirection = Vector3.right;
     }
-    
-    private void StopMoving()
+
+    public void StopMoving()
     {
         _ballDirection = Vector3.zero;
-        enabled = false;
     }
 
-    private void DropBall(float fallingTime, float fallingDistance)
+    public void DropBall(float fallingTime, float fallingDistance)
     {
         float fallingHightStepDistance = fallingDistance
                                                 / (fallingTime / Time.deltaTime);
@@ -83,11 +74,11 @@ public class Ball : MonoBehaviour
            fallingTime -= Time.deltaTime;
             _selfTransform.Translate(new Vector3(_selfTransform.position.x,
                                                                             y,
-                                                      _selfTransform.position.z));
+                                                      _selfTransform.position.z), Space.Self);
         }
     }
 
-    private void MoveBallToStartingPosition()
+    public void MoveToStartingPosition()
     {
         _selfTransform.position = _startingPosition;
     }
@@ -109,14 +100,5 @@ public class Ball : MonoBehaviour
         }
 
         _isForward = isForward;
-    }
-
-    private Vector3 CalculateCameraPosition()
-    {
-        float x = _selfTransform.position.x - _camerOffset;
-        float z = _selfTransform.position.z - _camerOffset;
-        float cameraDisplacement = (x + z) / 2;
-
-        return new Vector3(cameraDisplacement, _cameraY, cameraDisplacement);
     }
 }

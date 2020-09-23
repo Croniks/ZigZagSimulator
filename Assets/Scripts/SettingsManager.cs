@@ -18,6 +18,7 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private float _moveSpeedMin = 3f;
     [SerializeField] private float _moveSpeedMax = 7f;
+    [SerializeField] private float _cameraOffset = 1f;
     [SerializeField] private float _fallingTime = 2f;
     [SerializeField] private float _fallingDistance = 4f;
     [SerializeField] private int _maxNumberPlatforms = 50;
@@ -42,7 +43,7 @@ public class SettingsManager : MonoBehaviour
         EventAggregator.LevelDifficultyChangedEvent.Unsubscribe(SetLevelDifficulty);
         EventAggregator.CapsuleRuleChangedEvent.Unsubscribe(SetCapsuleRule);
     }
-
+    
     public LevelDifficulty GetLevelDifficulty()
     {
         if (debug)
@@ -111,6 +112,11 @@ public class SettingsManager : MonoBehaviour
     public float GetMoveSpeedMax()
     {
         return _moveSpeedMax;
+    }
+
+    public float GetCameraOffset()
+    {
+        return _cameraOffset;
     }
 
     public float GetFallingTime()

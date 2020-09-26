@@ -22,6 +22,15 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
+        SetMoveSpeedToUI(
+            TransformRealMoveSpeedToUIValue(SettingsManager.Instance.GetMoveSpeedMin(),
+                                                SettingsManager.Instance.GetMoveSpeedMax(),
+                                                    SettingsManager.Instance.GetMoveSpeed())
+        );
+        
+        SetLevelDifficultyToUI(SettingsManager.Instance.GetLevelDifficulty());
+        SetCapsuleRuleToUI(SettingsManager.Instance.GetCapsuleRule());
+
         EventAggregator.GameOverEvent.Subscribe(GameOver);
     }
     

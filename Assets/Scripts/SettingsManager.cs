@@ -108,7 +108,7 @@ public class SettingsManager : MonoBehaviour
     {
         return _moveSpeedMin;
     }
-
+    
     public float GetMoveSpeedMax()
     {
         return _moveSpeedMax;

@@ -63,18 +63,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Different\FallTrigger.cs" />
+    <Compile Include="Assets\Scripts\Different\PlatformBuilder.cs" />
+    <Compile Include="Assets\Scripts\Different\PlatformTrigger.cs" />
     <Compile Include="Assets\Scripts\Events\GameEvents\GameOverEvent\GameOverEvent.cs" />
     <Compile Include="Assets\Scripts\Events\UIEvents\BallVelocity\BallVelocityChangedEvent.cs" />
     <Compile Include="Assets\Scripts\Events\UIEvents\CapsuleRule\CapsuleRuleChangedEvent.cs" />
     <Compile Include="Assets\Scripts\Events\UIEvents\EventAggregator.cs" />
     <Compile Include="Assets\Scripts\Events\UIEvents\LevelDifficulty\LevelDifficultyChangedEvent.cs" />
     <Compile Include="Assets\Scripts\GameEntities\BallController.cs" />
-    <Compile Include="Assets\Scripts\GameEntities\CameraController.cs" />
     <Compile Include="Assets\Scripts\GameEntities\Capsule.cs" />
-    <Compile Include="Assets\Scripts\GameEntities\FallTrigger.cs" />
     <Compile Include="Assets\Scripts\GameEntities\Platform.cs" />
-    <Compile Include="Assets\Scripts\GameEntities\PlatformTrigger.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\PlatformManager.cs" />
     <Compile Include="Assets\Scripts\SettingsManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIPanel.cs" />
     <Compile Include="Assets\Scripts\UI\UITransition.cs" />

@@ -4,24 +4,21 @@ using Events;
 
 public class BallController : MonoBehaviour
 {
-    [SerializeField] private Transform _cameraTransform;
-    private float _ballVelocity;
-    
+    private float _ballVelocity = 5f;
     private Transform _selfTransform;
     private Vector3 _startingPosition;
-    private float _cameraY;
     private float _selfY;
     private Vector3 _ballDirection = Vector3.zero;
-    private bool _isForward = true;
+    private bool _isRight = true;
 
     
     void Start()
     {
-        _cameraTransform = _cameraTransform.GetComponent<Transform>();
+        EventAggregator.BallVelocityChangedEvent.Subscribe(ChangeVelocity);
+
         _selfTransform = GetComponent<Transform>();
         _startingPosition = _selfTransform.position;
         _selfY = _selfTransform.position.y;
-        _cameraY = _cameraTransform.position.y;
         enabled = false;
     }
     
@@ -34,7 +31,7 @@ public class BallController : MonoBehaviour
         
         if (Input.GetMouseButtonUp(0))
         {
-            ChangeDirection(!_isForward);
+            ChangeDirection(!_isRight);
         }
         
         _selfTransform.Translate(_ballDirection * Time.deltaTime * _ballVelocity, Space.World);
@@ -82,23 +79,23 @@ public class BallController : MonoBehaviour
     {
         _selfTransform.position = _startingPosition;
     }
-
+    
     public void ChangeVelocity(float velocity)
     {
         _ballVelocity = velocity;
     }
 
-    private void ChangeDirection(bool isForward)
+    private void ChangeDirection(bool flag)
     {
-        if (isForward)
+        if (flag)
         {
-            _ballDirection = Vector3.right; // (1, 0, 0)
+            _ballDirection = Vector3.right; 
         }
         else
         {
-            _ballDirection = Vector3.forward; // (0, 0, 1)
+            _ballDirection = Vector3.left; 
         }
-
-        _isForward = isForward;
+        
+        _isRight = flag;
     }
 }

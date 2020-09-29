@@ -14,7 +14,6 @@ public class SettingsManager : MonoBehaviour
 
     [SerializeField] private LevelDifficulty _levelDifficulty = LevelDifficulty.Hard;
     [SerializeField] private CapsuleRule _capsuleRule = CapsuleRule.InOrder;
-    [SerializeField] private LayerMask _layerMaskForNextPlatform;
     [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private float _moveSpeedMin = 3f;
     [SerializeField] private float _moveSpeedMax = 7f;
@@ -22,9 +21,8 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private float _fallingTime = 2f;
     [SerializeField] private float _fallingDistance = 4f;
     [SerializeField] private int _maxNumberPlatforms = 50;
-    [SerializeField] private int _offsetForPlatforms = 30;
+    
 
-     
     void Awake()
     {
         Instance = this;    
@@ -132,15 +130,5 @@ public class SettingsManager : MonoBehaviour
     public int GetMaxNumberPlatforms()
     {
         return _maxNumberPlatforms;
-    }
-
-    public int GetOffsetForPlatforms()
-    {
-        return _offsetForPlatforms;
-    }
-
-    public LayerMask GetLayerMaskForNextPlatforms()
-    {
-        return _layerMaskForNextPlatform;
     }
 }

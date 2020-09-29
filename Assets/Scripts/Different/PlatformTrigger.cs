@@ -21,7 +21,7 @@ public class PlatformTrigger : MonoBehaviour
         
         if (_currentNumberPlatforms < 1)
         { 
-            _gameManager.BuildPlatforms(_maxNumberPlatforms);
+            //_gameManager.BuildPlatforms(_maxNumberPlatforms);
             _currentNumberPlatforms = _maxNumberPlatforms;
         }
     }

@@ -1,24 +1,20 @@
 ﻿using UnityEngine;
 using Events;
 
+public enum Option { Level, Capsule }
 
 public class PlatformManager : MonoBehaviour
 {
     public static PlatformManager Instance;
-    private SettingsManager _settingsManager;
-
-    [SerializeField] private PlatformBuilder startingPlatformBuilder;     
-    [SerializeField] private PlatformBuilder anotherPlatformBuilder;
-    [SerializeField] private PlatformBuilder startingPlatformBuilderPrefab;
-    public Platform[] startingPlatforms;
-    public Platform[] platformPrefabs;
+    
+    [SerializeField] private PlatformBuilder[] _platformBuilders;
+    private Transform[] _platformBuilderTransforms;
+    private int _buildersQuantity;
+    public GameObject[] startingPlatforms;
+    public GameObject[] platformPrefabs;
     public GameObject capsule;
-    public GameObject currentPlatformPrefab;
-    public Transform currentStartPlatform;
 
-    private Vector3 _startingPlatformBuilderPosition;
-    private Transform _startingPlatformBuilderTransform;
-    private Transform _anotherPlatformBuilderTransform;
+    private Vector3 _lastPlatformPostion;
     
 
     private void Awake()
@@ -28,10 +24,11 @@ public class PlatformManager : MonoBehaviour
 
     void Start()
     {
-        _settingsManager = SettingsManager.Instance;
+        _buildersQuantity = _platformBuilders.Length;
 
-        _levelDifficulty = _settingsManager.GetLevelDifficulty();
-        _capsuleRule = _settingsManager.GetCapsuleRule();
+        //_startingPlatformBuilderTransform = _startingPlatformBuilder.GetComponent<Transform>();
+        //_anotherPlatformBuilderTransform = _anotherPlatformBuilder.GetComponent<Transform>();
+        //_lastPlatformPostion = 
 
         EventAggregator.LevelDifficultyChangedEvent.Subscribe(ChangeLevelDifficulty);
         EventAggregator.CapsuleRuleChangedEvent.Subscribe(ChangeCapsuleRule);
@@ -42,13 +39,41 @@ public class PlatformManager : MonoBehaviour
         
     }
 
-    public void ChangeLevelDifficulty(int index)
+    private void TakeBuilderTransforms()
     {
-        _levelDifficulty = (LevelDifficulty)index;
+        for(int i=0; i < _buildersQuantity; i++)
+        {
+            _platformBuilderTransforms[i] = _platformBuilders[i].transform;
+        }
     }
+
+    public void SetOptionToBuilders(Option option, int value)
+    {
+        for (int i = 0; i < _buildersQuantity; i++)
+        {
+            _platformBuilders[i].SetOption(option, value);
+        }
+    }
+
     
+    public void ChangeLevelDifficulty(int value)
+    {
+        SetOptionToBuilders(Option.Level, value);
+        //_levelDifficulty = (LevelDifficulty)index;
+        //ApplySettings();
+        //CalculateDisplacementAndBorderNumber();
+    }
+
     public void ChangeCapsuleRule(int index)
     {
-        _capsuleRule = (CapsuleRule)index;
+        //_capsuleRule = (CapsuleRule)index;
+        //ApplySettings();
+        //CalculateDisplacementAndBorderNumber();
+    }
+
+
+    private void SetLastPlatformPositon(PlatformBuilder platformBuilder, Vector3 position)
+    {
+        platformBuilder.SetLastPlatformPosition(position);
     }
 }

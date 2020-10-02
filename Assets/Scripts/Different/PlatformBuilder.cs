@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using Events;
 
 
 public class PlatformBuilder : MonoBehaviour
 { 
-    private GameObject[] _platformsPool;
+    public List<GameObject> _platformsPool;
     private GameObject _platform;
     private GameObject _capsule;
     private Transform _selfTransform;
@@ -13,105 +15,93 @@ public class PlatformBuilder : MonoBehaviour
     private LevelDifficulty _levelDifficulty;
     private CapsuleRule _capsuleRule;
     private int _maxPlatforms;
-    private Vector3 _lastPlatformPosition;
-    private Vector3 _nextPosition;
+    private Vector3 _nextPlatformPosition;
     GameObject[] _platformsForCaplsule = new GameObject[5];
+    
 
-
-    void Start()
+    public void Init()
     {
+        _capsuleRule = SettingsManager.Instance.GetCapsuleRule();
+        _levelDifficulty = SettingsManager.Instance.GetLevelDifficulty();
+        _capsule = PlatformManager.Instance.capsule;
+        ChoosePlatform((int)_levelDifficulty);
+        CalculateDisplacementAndBorderNumber();
         _selfTransform = GetComponent<Transform>();
         _maxPlatforms = SettingsManager.Instance.GetMaxNumberPlatforms();
-        _platformsPool = new GameObject[_maxPlatforms];
+        _platformsPool = new List<GameObject>();
+        _nextPlatformPosition = PlatformManager.Instance.startingPlatforms[(int)_levelDifficulty].transform.position;
+        
+        EventAggregator.LevelDifficultyChangedEvent.Subscribe(ChangeLevelDifficulty);
+        EventAggregator.CapsuleRuleChangedEvent.Subscribe(ChangeCapsuleRule);
     }
     
+    public void ChangeLevelDifficulty(int value)
+    {
+        _levelDifficulty = (LevelDifficulty)value;
+        ChoosePlatform(value);
+        CalculateDisplacementAndBorderNumber();
+    }
+
+    public void ChangeCapsuleRule(int value)
+    {
+        _capsuleRule = (CapsuleRule)value;        
+    }
+     
     public void Build()
     {
         BuildPlatforms();
     }
     
-    public void Destroy()
+    private void ChoosePlatform(int value)
     {
-        DestroyPlatforms();
+        _platform = PlatformManager.Instance.platformPrefabs[value];
     }
-
-    public void SetLastPlatformPosition(Vector3 position)
-    {
-        _lastPlatformPosition = position;
-    }
-
-    public void SetPlatform(GameObject platform)
-    {
-        _platform = platform;
-    }
-
-    public void SetCapsule(GameObject capsule)
-    {
-        _capsule = capsule;
-    }
-
-    public void SetOption(Option option, int value)
-    {
-        if(option == Option.Level)
-            ChangeLevelDifficulty((LevelDifficulty)value);
-        if(option == Option.Capsule)
-            ChangeCapsuleRule((CapsuleRule)value);
-    }
-    
-    private void ChangeLevelDifficulty(LevelDifficulty levelDifficulty)
-    {
-        _levelDifficulty = levelDifficulty;
-        CalculateDisplacementAndBorderNumber();
-    }
-    
-    private void ChangeCapsuleRule(CapsuleRule capsuleRule)
-    {
-        _capsuleRule = capsuleRule;
-    }
-    
+     
     private void CalculateDisplacementAndBorderNumber()
     {
-        if((int)_levelDifficulty == 0)
+        if(_levelDifficulty == LevelDifficulty.Easy)
         { 
             _displacement =  2.1213f;
             _rightBorderNumber = 6.5f;
             _leftBorderNumber = -6.5f;
         }
-        else if((int)_levelDifficulty == 1)
+        else if(_levelDifficulty == LevelDifficulty.Normal)
         {
             _displacement = 1.4142f;
             _rightBorderNumber = 7.2f;
             _leftBorderNumber = -7.2f;
         } 
-        else if((int)_levelDifficulty == 2)
+        else if(_levelDifficulty == LevelDifficulty.Hard)
         {
             _displacement = 0.7072f;
             _rightBorderNumber = 7.9f;
             _leftBorderNumber = -7.9f;
         }
     }
-    
+
+    public void UpdateLastPlatformPosition()
+    {
+        _nextPlatformPosition = _platformsPool[_platformsPool.Count-1].transform.position;
+    }
+
     public void BuildPlatforms()
     {
         GameObject platform = null;
-        Vector3 postion;
-        
+         
         for (int i = 0; i < _maxPlatforms; i++)
         {
             if (Random.Range(0, 2) == 0)
             {
-                postion = NextPosition(true);
+                SetNextPlatformPosition(true);
             }
             else
             {
-                postion = NextPosition(false);
+                SetNextPlatformPosition(false);
             }
-
-            _lastPlatformPosition = postion;
-            platform = Instantiate(_platform, postion, Quaternion.Euler(0f, 45f, 0));
-            _platformsPool[i] = platform;
-            platform.transform.parent = _selfTransform;
-
+            
+            platform = Instantiate(_platform, _nextPlatformPosition, Quaternion.Euler(0f, 45f, 0), _selfTransform);
+            //_platformsPool[i] = platform;
+            _platformsPool.Add(platform);
              _platformsForCaplsule[i % 5] = platform;
 
             if ((i + 1) % 5 == 0)
@@ -121,30 +111,26 @@ public class PlatformBuilder : MonoBehaviour
         }
     }
     
-    private Vector3 NextPosition(bool IsGoRight)
+    private void SetNextPlatformPosition(bool IsGoRight)
     {
-        Vector3 _nextPosition = _lastPlatformPosition;
-
-        _nextPosition.z += _displacement;
+        _nextPlatformPosition.z += _displacement;
         
         if(IsGoRight)
         {
-            _nextPosition.x += _displacement;
+            _nextPlatformPosition.x += _displacement;
 
-            if(_nextPosition.x > _rightBorderNumber)
-                _nextPosition.x -= _displacement * 2;
+            if(_nextPlatformPosition.x > _rightBorderNumber)
+                _nextPlatformPosition.x -= _displacement * 2;
         }
         else
         {
-            _nextPosition.x -= _displacement;
+            _nextPlatformPosition.x -= _displacement;
 
-            if (_nextPosition.x < _leftBorderNumber)
-                _nextPosition.x += _displacement * 2;
+            if (_nextPlatformPosition.x < _leftBorderNumber)
+                _nextPlatformPosition.x += _displacement * 2;
         }
-        
-        return _nextPosition;
     }
-
+    
     private void CreateCapsules(GameObject[] platforms, int quantityPlatforms)
     {
         GameObject platformForCapsule = null;

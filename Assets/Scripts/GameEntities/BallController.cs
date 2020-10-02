@@ -14,12 +14,13 @@ public class BallController : MonoBehaviour
     
     void Start()
     {
-        EventAggregator.BallVelocityChangedEvent.Subscribe(ChangeVelocity);
-
+        _ballVelocity = SettingsManager.Instance.GetMoveSpeed();
         _selfTransform = GetComponent<Transform>();
         _startingPosition = _selfTransform.position;
         _selfY = _selfTransform.position.y;
         enabled = false;
+
+        EventAggregator.BallVelocityChangedEvent.Subscribe(ChangeVelocity);
     }
     
     void Update()

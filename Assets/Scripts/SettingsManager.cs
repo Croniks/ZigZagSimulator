@@ -14,6 +14,7 @@ public class SettingsManager : MonoBehaviour
 
     [SerializeField] private LevelDifficulty _levelDifficulty = LevelDifficulty.Hard;
     [SerializeField] private CapsuleRule _capsuleRule = CapsuleRule.InOrder;
+    [SerializeField] private float _platformMoveSpeed = 5f;
     [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private float _moveSpeedMin = 3f;
     [SerializeField] private float _moveSpeedMax = 7f;
@@ -22,7 +23,7 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private float _fallingDistance = 4f;
     [SerializeField] private int _maxNumberPlatforms = 50;
     
-
+    
     void Awake()
     {
         Instance = this;    
@@ -80,6 +81,26 @@ public class SettingsManager : MonoBehaviour
     public void SetCapsuleRule(int capsuleRule)
     {
         PlayerPrefs.SetInt("CapsuleRule", capsuleRule);
+    }
+
+    public float GetPlatformMoveSpeed()
+    {
+        if (debug)
+        {
+            return _platformMoveSpeed;
+        }
+
+        if (PlayerPrefs.HasKey("PlatformMoveSpeed"))
+        {
+            return PlayerPrefs.GetFloat("PlatformMoveSpeed");
+        }
+
+        return _platformMoveSpeed;
+    }
+
+    public void SetPlatformMoveSpeed(float moveSpeed)
+    {
+        PlayerPrefs.SetFloat("PlatformMoveSpeed", moveSpeed);
     }
 
     public float GetMoveSpeed()

@@ -10,10 +10,11 @@ public class PlatformManager : MonoBehaviour
     public GameObject[] platformPrefabs;
     public GameObject[] startingPlatforms;
     public GameObject capsule;
+    public int numberPlatformsUnderConstruction;
     private Vector3 _direction = Vector3.back;
     private float _platformMoveSpeed;
-    
-    
+
+      
     private void Awake()
     {
         Instance = this;
@@ -23,6 +24,7 @@ public class PlatformManager : MonoBehaviour
     {
         _platformMoveSpeed = SettingsManager.Instance.GetPlatformMoveSpeed();
         _platformBuilderTransform = _platformBuilder.GetComponent<Transform>();
+        numberPlatformsUnderConstruction = SettingsManager.Instance.GetNumberPlatformsUnderConstruction();
 
         _platformBuilder.Init();
         _platformBuilder.Build();
@@ -35,7 +37,7 @@ public class PlatformManager : MonoBehaviour
             _platformBuilder.UpdateLastPlatformPosition();
             _platformBuilder.Build();
         }
-        
+
         MoveBuilder();
     }
     

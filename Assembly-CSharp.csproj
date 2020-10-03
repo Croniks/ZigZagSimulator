@@ -74,6 +74,8 @@
     <Compile Include="Assets\Scripts\GameEntities\BallController.cs" />
     <Compile Include="Assets\Scripts\GameEntities\Capsule.cs" />
     <Compile Include="Assets\Scripts\GameEntities\Platform.cs" />
+    <Compile Include="Assets\Scripts\GameEntities\Platform\PlatformDestroyTrigger.cs" />
+    <Compile Include="Assets\Scripts\GameEntities\Platform\PlatformDropTrigger.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\PlatformManager.cs" />
     <Compile Include="Assets\Scripts\SettingsManager.cs" />

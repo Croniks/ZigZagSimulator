@@ -5,7 +5,7 @@ using Events;
 
 public class PlatformBuilder : MonoBehaviour
 { 
-    public List<GameObject> _platformsPool;
+    public GameObject[] _platformsPool;
     private GameObject _platform;
     private GameObject _capsule;
     private Transform _selfTransform;
@@ -15,6 +15,8 @@ public class PlatformBuilder : MonoBehaviour
     private LevelDifficulty _levelDifficulty;
     private CapsuleRule _capsuleRule;
     private int _maxPlatforms;
+    private int _halfOfMaxPlatforms;
+    private int _halfIndex = 1;
     private Vector3 _nextPlatformPosition;
     GameObject[] _platformsForCaplsule = new GameObject[5];
     
@@ -28,7 +30,8 @@ public class PlatformBuilder : MonoBehaviour
         CalculateDisplacementAndBorderNumber();
         _selfTransform = GetComponent<Transform>();
         _maxPlatforms = SettingsManager.Instance.GetMaxNumberPlatforms();
-        _platformsPool = new List<GameObject>();
+        _halfOfMaxPlatforms = _maxPlatforms / 2;
+        _platformsPool = new GameObject[_maxPlatforms];
         _nextPlatformPosition = PlatformManager.Instance.startingPlatforms[(int)_levelDifficulty].transform.position;
         
         EventAggregator.LevelDifficultyChangedEvent.Subscribe(ChangeLevelDifficulty);
@@ -81,14 +84,16 @@ public class PlatformBuilder : MonoBehaviour
 
     public void UpdateLastPlatformPosition()
     {
-        _nextPlatformPosition = _platformsPool[_platformsPool.Count-1].transform.position;
+        _nextPlatformPosition = _platformsPool[GetLastPlatformIndex()].transform.position;
     }
-
+    
     public void BuildPlatforms()
     {
         GameObject platform = null;
-         
-        for (int i = 0; i < _maxPlatforms; i++)
+        int index = GetPlacementIndex();
+        int quantity = index + _halfOfMaxPlatforms;
+        
+        for (int i= index; i < quantity; i++)
         {
             if (Random.Range(0, 2) == 0)
             {
@@ -100,17 +105,31 @@ public class PlatformBuilder : MonoBehaviour
             }
             
             platform = Instantiate(_platform, _nextPlatformPosition, Quaternion.Euler(0f, 45f, 0), _selfTransform);
-            //_platformsPool[i] = platform;
-            _platformsPool.Add(platform);
+            _platformsPool[i] = platform;
              _platformsForCaplsule[i % 5] = platform;
-
+            
             if ((i + 1) % 5 == 0)
             {
                 CreateCapsules(_platformsForCaplsule, i);
             }
         }
+
+        _halfIndex = _halfIndex ^ 3;
     }
     
+    private int GetLastPlatformIndex()
+    {
+        Debug.Log((_maxPlatforms / _halfIndex) - 1);
+        return (_maxPlatforms / _halfIndex) - 1;
+    }
+
+    private int GetPlacementIndex()
+    {
+        if(_halfIndex == 2)
+            return (_maxPlatforms / 2);
+        return 0;
+    }
+
     private void SetNextPlatformPosition(bool IsGoRight)
     {
         _nextPlatformPosition.z += _displacement;

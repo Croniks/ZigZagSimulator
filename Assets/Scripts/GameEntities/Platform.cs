@@ -7,7 +7,7 @@ public class Platform : MonoBehaviour
     [SerializeField]
     private Rigidbody _rb;
    
-
+    
     void Start()
     {
         _gameManager = GameManager.Instance;
@@ -24,4 +24,6 @@ public class Platform : MonoBehaviour
         //_gameManager.platformsPool.Remove(gameObject);
         Destroy(gameObject);
     }
+
+
 }

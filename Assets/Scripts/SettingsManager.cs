@@ -21,7 +21,8 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private float _cameraOffset = 1f;
     [SerializeField] private float _fallingTime = 2f;
     [SerializeField] private float _fallingDistance = 4f;
-    [SerializeField] private int _maxNumberPlatforms = 50;
+    [SerializeField] private int _maxNumberPlatforms = 70;
+    [SerializeField] private int _numberPlatformsUnderConstruction = 30;
     
     
     void Awake()
@@ -151,5 +152,10 @@ public class SettingsManager : MonoBehaviour
     public int GetMaxNumberPlatforms()
     {
         return _maxNumberPlatforms;
+    }
+
+    public int GetNumberPlatformsUnderConstruction()
+    {
+        return _numberPlatformsUnderConstruction;
     }
 }

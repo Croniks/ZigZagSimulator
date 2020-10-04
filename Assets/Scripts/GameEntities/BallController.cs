@@ -4,6 +4,7 @@ using Events;
 
 public class BallController : MonoBehaviour
 {
+    [SerializeField] private Rigidbody _rb;
     private float _ballVelocity = 5f;
     private Transform _selfTransform;
     private Vector3 _startingPosition;
@@ -11,25 +12,28 @@ public class BallController : MonoBehaviour
     private Vector3 _ballDirection = Vector3.zero;
     private bool _isRight = true;
 
-    
-    void Start()
+    void Awake()
     {
-        _ballVelocity = SettingsManager.Instance.GetMoveSpeed();
         _selfTransform = GetComponent<Transform>();
         _startingPosition = _selfTransform.position;
         _selfY = _selfTransform.position.y;
-        enabled = false;
+        _rb.Sleep();
+    }
 
+    void Start()
+    {
+        _ballVelocity = SettingsManager.Instance.GetMoveSpeed();
         EventAggregator.BallVelocityChangedEvent.Subscribe(ChangeVelocity);
+        enabled = false;
     }
     
     void Update()
-    {
-        if (Input.GetKey(KeyCode.F))
+    { 
+        if(Input.GetKeyDown(KeyCode.F))
         {
             EventAggregator.GameOverEvent.Publish();
         }
-        
+
         if (Input.GetMouseButtonUp(0))
         {
             ChangeDirection(!_isRight);
@@ -55,30 +59,13 @@ public class BallController : MonoBehaviour
     {
         _ballDirection = Vector3.zero;
     }
-
-    public void DropBall(float fallingTime, float fallingDistance)
-    {
-        float fallingHightStepDistance = fallingDistance
-                                                / (fallingTime / Time.deltaTime);
-        float y = 0f;
-
-        while(true)
-        {
-            if(fallingTime <= 0)
-                return;
-
-            y = _selfTransform.position.y - fallingHightStepDistance;
-
-           fallingTime -= Time.deltaTime;
-            _selfTransform.Translate(new Vector3(_selfTransform.position.x,
-                                                                            y,
-                                                      _selfTransform.position.z), Space.Self);
-        }
-    }
-
+    
     public void MoveToStartingPosition()
     {
         _selfTransform.position = _startingPosition;
+        _selfTransform.eulerAngles = new Vector3(0f, 0f, 0f);
+        _rb.velocity = Vector3.zero;
+        _rb.angularVelocity = Vector3.zero;
     }
     
     public void ChangeVelocity(float velocity)

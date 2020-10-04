@@ -14,6 +14,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text _score;
     [SerializeField] private UIPanel _startPanel;
     [SerializeField] private RectTransform _backgroundMainPanel;
+
+    private int _scores;
     
     void Awake()
     {
@@ -92,8 +94,26 @@ public class UIManager : MonoBehaviour
         _capsuleRule.GetComponentsInChildren<Toggle>()[(int)capsuleRule].isOn = true;
     }
     
-    public void SetScore(int number)
+    public void SetScores(int number)
     {
-        _score.text = number.ToString();
+        _scores = number;
+        PrintScores();
+    }
+
+    public void AddScore(int number)
+    {
+        _scores += number;
+        PrintScores();
+    }
+
+    public void ResetScores()
+    {
+        _scores = 0;
+        PrintScores();
+    }
+
+    private void PrintScores()
+    {
+        _score.text = _scores.ToString();
     }
 }

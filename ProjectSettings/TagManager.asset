@@ -19,14 +19,14 @@ TagManager:
   - UI
   - 
   - 
-  - BorderTrigger
-  - PlatformTrigger
-  - FallTrigger
-  - Platform
   - Ball
   - Capsule
-  - Camera
-  - 
+  - Platform
+  - DropTrigger
+  - PlatformDropTrigger
+  - DestroyTrigger
+  - PlatformDestroyTrigger
+  - BallTrigger
   - 
   - 
   - 

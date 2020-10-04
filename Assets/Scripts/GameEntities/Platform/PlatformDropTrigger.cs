@@ -5,7 +5,7 @@ public class PlatformDropTrigger : MonoBehaviour
 {
     [SerializeField] private Rigidbody _rb;
 
-    void OnTriggerEnter(Collider other)
+    void OnTriggerExit(Collider other)
     {
         DropPlatform();
     }

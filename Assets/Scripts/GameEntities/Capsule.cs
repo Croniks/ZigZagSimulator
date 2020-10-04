@@ -3,16 +3,16 @@
 
 public class Capsule : MonoBehaviour
 {
-    private GameManager _gameManager;
+    private UIManager _uiManager;
 
     void Start()
     {
-        _gameManager = GameManager.Instance;
+        _uiManager = UIManager.Instance;
     }
     
     void OnTriggerEnter(Collider other)
     {
-        //_gameManager.NumberOfPoints = 1;
+        _uiManager.AddScore(1);
         Destroy(gameObject);   
     }
 }
